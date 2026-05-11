@@ -1,0 +1,27 @@
+{
+  "name": "miniquizz",
+  "exports": "./main.tsx",
+  "version": "0.1.0",
+  "tasks": {
+    "bump": "deno run -A jsr:@mys/bump@1",
+    "deps:outdated": "deno outdated",
+    "deps:update": "deno outdated --update --latest --interactive",
+    "start": "deno run --allow-net --allow-env --no-prompt main.tsx",
+    "dev": "deno run --allow-net --allow-env --no-prompt --watch main.tsx",
+    "test:run": "deno test --allow-all"
+  },
+  "imports": {
+    "@dldc/hono-ui": "jsr:@dldc/hono-ui@^1.10.0",
+    "@hono/hono": "jsr:@hono/hono@^4.12.15",
+    "@hono/standard-validator": "jsr:@hono/standard-validator@^0.2.2",
+    "@opentelemetry/api": "npm:@opentelemetry/api@^1.9.1",
+    "@std/expect": "jsr:@std/expect@^1.0.19",
+    "@valibot/valibot": "jsr:@valibot/valibot@^1.4.0",
+    "hono": "jsr:@hono/hono@^4.12.14",
+    "lucide-static": "npm:lucide-static@^1.14.0"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx"
+  }
+}
