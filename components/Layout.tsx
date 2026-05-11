@@ -20,6 +20,7 @@ export const Layout: FC<LayoutProps> = (
             href={`data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">❓</text></svg>`}
           />
           <script type="module" src="/public/libs/htmx.4.0.0-beta-3.min.js" />
+          <script type="module" src="/public/libs/hx-sse.4.0.0-beta-3.min.js" />
         </Fragment>
       }
     >
