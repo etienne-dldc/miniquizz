@@ -1,0 +1,268 @@
+{
+  "name": "Schema Coverage Quiz",
+  "description": "Test dataset covering all quizzSchema content block variants and multiple answer patterns.",
+  "questions": [
+    {
+      "question": [
+        {
+          "type": "text",
+          "text": "What does HTML stand for?"
+        }
+      ],
+      "options": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "HyperText Markup Language"
+            }
+          ],
+          "isCorrect": true
+        },
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "HighText Machine Language"
+            }
+          ],
+          "isCorrect": false
+        },
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "Hyperlinks and Text Markup Language"
+            }
+          ],
+          "isCorrect": false
+        },
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "Home Tool Markup Language"
+            }
+          ],
+          "isCorrect": false
+        }
+      ]
+    },
+    {
+      "question": [
+        {
+          "type": "text",
+          "text": "Which JavaScript values are falsy?"
+        },
+        {
+          "type": "code-line",
+          "code": "if (value) { /* truthy */ }"
+        }
+      ],
+      "options": [
+        {
+          "content": [
+            {
+              "type": "code-line",
+              "code": "0"
+            }
+          ],
+          "isCorrect": true
+        },
+        {
+          "content": [
+            {
+              "type": "code-line",
+              "code": "\"\""
+            }
+          ],
+          "isCorrect": true
+        },
+        {
+          "content": [
+            {
+              "type": "code-line",
+              "code": "[]"
+            }
+          ],
+          "isCorrect": false
+        },
+        {
+          "content": [
+            {
+              "type": "code-line",
+              "code": "\"0\""
+            }
+          ],
+          "isCorrect": false
+        }
+      ]
+    },
+    {
+      "question": [
+        {
+          "type": "text",
+          "text": "What will this TypeScript function return for n = 4?"
+        },
+        {
+          "type": "code-block",
+          "code": "function sumTo(n: number): number {\n  let sum = 0;\n  for (let i = 1; i <= n; i++) sum += i;\n  return sum;\n}"
+        }
+      ],
+      "options": [
+        {
+          "content": [
+            {
+              "type": "code-line",
+              "code": "6"
+            }
+          ],
+          "isCorrect": false
+        },
+        {
+          "content": [
+            {
+              "type": "code-line",
+              "code": "10"
+            }
+          ],
+          "isCorrect": true
+        },
+        {
+          "content": [
+            {
+              "type": "code-line",
+              "code": "16"
+            }
+          ],
+          "isCorrect": false
+        }
+      ]
+    },
+    {
+      "question": [
+        {
+          "type": "text",
+          "text": "Identify the logo shown in the image."
+        },
+        {
+          "type": "image",
+          "src": "/images/deno-logo.png",
+          "alt": "A circle logo with a dinosaur silhouette"
+        }
+      ],
+      "options": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "Node.js"
+            }
+          ],
+          "isCorrect": false
+        },
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "Deno"
+            }
+          ],
+          "isCorrect": true
+        },
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "Bun"
+            }
+          ],
+          "isCorrect": false
+        }
+      ]
+    },
+    {
+      "question": [
+        {
+          "type": "text",
+          "text": "Select all valid HTTP methods from the list below."
+        }
+      ],
+      "options": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "GET"
+            }
+          ],
+          "isCorrect": true
+        },
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "POST"
+            }
+          ],
+          "isCorrect": true
+        },
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "FETCH"
+            }
+          ],
+          "isCorrect": false
+        },
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "UPDATE"
+            }
+          ],
+          "isCorrect": false
+        }
+      ]
+    },
+    {
+      "question": [
+        {
+          "type": "text",
+          "text": "Pick the expression that creates an array with values 1, 2, 3 in JavaScript."
+        }
+      ],
+      "options": [
+        {
+          "content": [
+            {
+              "type": "code-line",
+              "code": "[1, 2, 3]"
+            }
+          ],
+          "isCorrect": true
+        },
+        {
+          "content": [
+            {
+              "type": "code-line",
+              "code": "{1, 2, 3}"
+            }
+          ],
+          "isCorrect": false
+        },
+        {
+          "content": [
+            {
+              "type": "code-line",
+              "code": "(1, 2, 3)"
+            }
+          ],
+          "isCorrect": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,9 +1,10 @@
 export const DEFAULT_PORT = 3008;
+export const SESSION_COOKIE_NAME = "miniquizz-session-v1";
 
 export type AppEnv = {
   port: number;
   adminPassword: string;
-  dataFilePath: string;
+  dataFolderPath: string;
   otel: {
     denoEnabled: boolean;
     denoConsole: string | null;
@@ -60,7 +61,7 @@ export function readEnv(): AppEnv {
   return {
     port: parsePort(Deno.env.get("PORT")),
     adminPassword: requireString("ADMIN_PASSWORD"),
-    dataFilePath: requireString("DATA_FILE_PATH"),
+    dataFolderPath: requireString("DATA_FOLDER_PATH"),
     otel: {
       denoEnabled: parseFlag(Deno.env.get("OTEL_DENO")),
       denoConsole: nullable(Deno.env.get("OTEL_DENO_CONSOLE")),
