@@ -5,11 +5,19 @@ import { deleteCookie, setCookie } from "hono/cookie";
 import { serveStatic } from "hono/deno";
 import { streamSSE } from "hono/streaming";
 import console from "node:console";
+import { AdminQuizz } from "./components/AdminQuizz.tsx";
+import { UserQuizz } from "./components/UserQuizz.tsx";
 import denoJson from "./deno.json" with { type: "json" };
 import { adminActionSchema } from "./logic/adminActionSchema.ts";
-import { appEnv, SESSION_COOKIE_NAME } from "./logic/env.ts";
+import {
+  appEnv,
+  SESSION_COOKIE_NAME,
+  SESSIONS_STORAGE_KEY,
+  STATE_STORAGE_KEY,
+} from "./logic/env.ts";
 import { createQuizzStore } from "./logic/quizzStore.ts";
 import { createSessions } from "./logic/sessions.ts";
+import { userActionSchema } from "./logic/userActionSchema.ts";
 import { cacheControlMiddleware } from "./middlewares/cacheControlMiddleware.ts";
 import { otelRouteMiddleware } from "./middlewares/otelRouteMiddleware.ts";
 import { createSessionMiddleware } from "./middlewares/sessionMiddleware.ts";
@@ -26,8 +34,8 @@ console.log(
   `OpenTelemetry ${appEnv.otel.denoEnabled ? "enabled" : "disabled"}`,
 );
 
-const store = await createQuizzStore(appEnv.dataFolderPath);
-const sessions = createSessions();
+const store = await createQuizzStore(appEnv.dataFolderPath, STATE_STORAGE_KEY);
+const sessions = createSessions(SESSIONS_STORAGE_KEY);
 
 const app = new Hono();
 
@@ -79,7 +87,7 @@ app.get("/", async (c) => {
   }
 
   return await c.html(
-    <HomePage session={session} />,
+    <HomePage session={session} state={store.getState()} />,
   );
 });
 
@@ -93,7 +101,7 @@ app.get("/admin", (c) => {
     return c.redirect("/");
   }
 
-  return c.html(<AdminPage session={session} />);
+  return c.html(<AdminPage state={store.getState()} />);
 });
 
 app.post(
@@ -158,28 +166,75 @@ app.post("/logout", (c) => {
   return c.redirect("/");
 });
 
+app.get("/stream", (c) => {
+  const session = c.get("session");
+  if (!session) {
+    return c.text("Unauthorized", 401);
+  }
+  return streamSSE(c, async (stream) => {
+    await stream.writeSSE({
+      data: <UserQuizz sessionId={session.id} state={store.getState()} />,
+    });
+
+    let queue = Promise.resolve();
+    const unsub = store.subscribe((event) => {
+      if (
+        event.type === "All" ||
+        (event.type === "User" && event.sessionId === session.id)
+      ) {
+        queue = queue.then(async () => {
+          await stream.writeSSE({
+            data: <UserQuizz sessionId={session.id} state={store.getState()} />,
+          });
+        });
+      }
+    });
+
+    await new Promise<void>((resolve) => {
+      stream.onAbort(() => {
+        unsub();
+        resolve();
+      });
+    });
+  });
+});
+
 app.get("/admin/stream", (c) => {
   const session = c.get("session");
   if (!session || !session.isAdmin) {
     return c.text("Unauthorized", 401);
   }
-  // deno-lint-ignore require-await
   return streamSSE(c, async (stream) => {
-    let queue = Promise.resolve();
+    await stream.writeSSE({ data: <AdminQuizz state={store.getState()} /> });
 
-    const unsub = store.subscribe((state) => {
-      queue = queue.then(async () => {
-        await stream.writeSSE({
-          data: JSON.stringify(state),
-          event: "quizz-update",
+    let queue = Promise.resolve();
+    const unsub = store.subscribe((event) => {
+      if (event.type === "All" || event.type === "Admin") {
+        queue = queue.then(async () => {
+          await stream.writeSSE({
+            data: <AdminQuizz state={store.getState()} />,
+          });
         });
+      }
+    });
+
+    await new Promise<void>((resolve) => {
+      stream.onAbort(() => {
+        unsub();
+        resolve();
       });
     });
-
-    stream.onAbort(() => {
-      unsub();
-    });
   });
+});
+
+app.post("/action", sValidator("form", userActionSchema), (c) => {
+  const session = c.get("session");
+  if (!session) {
+    return c.text("Unauthorized", 401);
+  }
+  const action = c.req.valid("form");
+  store.dispatch(action);
+  return c.text("OK");
 });
 
 app.post("/admin/action", sValidator("form", adminActionSchema), (c) => {
@@ -188,7 +243,7 @@ app.post("/admin/action", sValidator("form", adminActionSchema), (c) => {
     return c.text("Unauthorized", 401);
   }
   const action = c.req.valid("form");
-  store.adminDispatch(action);
+  store.dispatch(action);
   return c.text("OK");
 });
 

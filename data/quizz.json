@@ -147,7 +147,7 @@
         },
         {
           "type": "image",
-          "src": "/images/deno-logo.png",
+          "src": "/data/deno-logo.svg",
           "alt": "A circle logo with a dinosaur silhouette"
         }
       ],

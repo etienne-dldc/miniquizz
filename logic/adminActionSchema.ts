@@ -2,13 +2,13 @@ import * as v from "@valibot/valibot";
 
 export const adminActionSchema = v.variant("type", [
   v.object({
-    type: v.literal("StartQuizz"),
+    type: v.literal("Start"),
   }),
   v.object({
-    type: v.literal("RevealAnswer"),
+    type: v.literal("Reset"),
   }),
   v.object({
-    type: v.literal("NextQuestion"),
+    type: v.literal("Next"),
   }),
 ]);
 

@@ -21,7 +21,8 @@
     "@std/path": "jsr:@std/path@^1.1.4",
     "@valibot/valibot": "jsr:@valibot/valibot@^1.4.0",
     "hono": "jsr:@hono/hono@^4.12.14",
-    "lucide-static": "npm:lucide-static@^1.14.0"
+    "lucide-static": "npm:lucide-static@^1.14.0",
+    "shiki": "npm:shiki@^4.0.2"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

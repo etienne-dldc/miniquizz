@@ -10,8 +10,8 @@ export interface Sessions {
   delete(sessionId: string): void;
 }
 
-export function createSessions() {
-  const sessions = new Map<string, Session>();
+export function createSessions(storageKey: string): Sessions {
+  const sessions = loadSessions();
 
   return {
     get(sessionId: string): Session | null {
@@ -21,10 +21,34 @@ export function createSessions() {
       const sessionId = crypto.randomUUID();
       const session: Session = { id: sessionId, name, isAdmin };
       sessions.set(sessionId, session);
+      saveSessions(sessions);
       return session;
     },
     delete(sessionId: string): void {
       sessions.delete(sessionId);
+      saveSessions(sessions);
     },
   };
+
+  function loadSessions(): Map<string, Session> {
+    const sessionsStr = localStorage.getItem(storageKey);
+    if (sessionsStr) {
+      try {
+        const sessionsObj = JSON.parse(sessionsStr);
+        return new Map(
+          Object.entries(sessionsObj).map((
+            [key, value],
+          ) => [key, value as Session]),
+        );
+      } catch (e) {
+        console.error("Failed to parse sessions from localStorage", e);
+      }
+    }
+    return new Map();
+  }
+
+  function saveSessions(sessions: Map<string, Session>): void {
+    const sessionsObj = Object.fromEntries(sessions);
+    localStorage.setItem(storageKey, JSON.stringify(sessionsObj));
+  }
 }

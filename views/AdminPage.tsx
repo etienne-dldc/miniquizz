@@ -1,14 +1,15 @@
-import { Paper, Typography } from "@dldc/hono-ui";
+import { Paper } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
+import { AdminQuizz } from "../components/AdminQuizz.tsx";
 import { Layout } from "../components/Layout.tsx";
 import { LogoutButton } from "../components/LogoutButton.tsx";
-import type { Session } from "../logic/sessions.ts";
+import type { QuizzState } from "../logic/quizzReducer.ts";
 
 type AdminPageProps = {
-  session: Session;
+  state: QuizzState;
 };
 
-export const AdminPage: FC<AdminPageProps> = ({ session }) => {
+export const AdminPage: FC<AdminPageProps> = ({ state }) => {
   return (
     <Layout title="Admin">
       <Paper
@@ -16,12 +17,9 @@ export const AdminPage: FC<AdminPageProps> = ({ session }) => {
         flexDirection="column"
         padding={4}
       >
-        <Typography textSize="2xl" fontWeight="bold" render="h2">
-          Admin page placeholder
-        </Typography>
-        <Typography>
-          Connected as {session.name}
-        </Typography>
+        <div hx-sse:connect="/admin/stream">
+          <AdminQuizz state={state} />
+        </div>
       </Paper>
       <LogoutButton />
     </Layout>
