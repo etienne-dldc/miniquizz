@@ -6,6 +6,10 @@ export const quizzContentBlockSchema = v.variant("type", [
     text: v.string(),
   }),
   v.object({
+    type: v.literal("large-text"),
+    text: v.string(),
+  }),
+  v.object({
     type: v.literal("code-line"),
     code: v.string(),
   }),

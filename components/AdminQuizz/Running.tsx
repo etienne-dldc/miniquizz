@@ -12,7 +12,7 @@ export const Running: FC<RunningProps> = ({ state }) => {
   const currentQuestion = state.quizz.questions[state.questionIndex];
 
   return (
-    <Stack direction="column" gap={4}>
+    <Stack flexDirection="column" gap={4}>
       {currentQuestion ? <Question question={currentQuestion} /> : null}
       <Button
         {...adminActionProps({ type: "Next" }, "ArrowRight")}

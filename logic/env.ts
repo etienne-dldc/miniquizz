@@ -36,9 +36,7 @@ function parsePort(raw: string | undefined): number {
   const parsed = Number(raw);
   if (!Number.isInteger(parsed) || parsed < 1 || parsed > 65535) {
     console.error(
-      `[env] Invalid PORT=${
-        JSON.stringify(raw)
-      }, using default ${DEFAULT_PORT}`,
+      `[env] Invalid PORT=${JSON.stringify(raw)}, using default ${DEFAULT_PORT}`,
     );
     return DEFAULT_PORT;
   }

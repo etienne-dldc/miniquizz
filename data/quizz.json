@@ -5,7 +5,7 @@
     {
       "question": [
         {
-          "type": "text",
+          "type": "large-text",
           "text": "What does HTML stand for?"
         }
       ],

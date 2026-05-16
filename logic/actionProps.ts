@@ -32,8 +32,6 @@ function actionProps(
     "hx-post": action,
     "hx-vals": JSON.stringify(vals),
     "hx-swap": "none",
-    ...(shortcut
-      ? { "hx-trigger": `click, keyup[code=='${shortcut}'] from:body` }
-      : {}),
+    ...(shortcut ? { "hx-trigger": `click, keyup[code=='${shortcut}'] from:body` } : {}),
   };
 }

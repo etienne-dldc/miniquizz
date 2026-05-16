@@ -1,12 +1,7 @@
 import { createSubscription, type SubscribeMethod } from "@dldc/pubsub";
 import { resolve } from "@std/path";
 import * as v from "@valibot/valibot";
-import {
-  type QuizzAction,
-  type QuizzEvent,
-  quizzReducer,
-  type QuizzState,
-} from "./quizzReducer.ts";
+import { type QuizzAction, type QuizzEvent, quizzReducer, type QuizzState } from "./quizzReducer.ts";
 import { type Quizz, quizzSchema } from "./quizzSchema.ts";
 
 export interface QuizzStore {

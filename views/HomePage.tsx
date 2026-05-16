@@ -19,7 +19,7 @@ export const HomePage: FC<HomePageProps> = ({ session, state }) => {
         flexDirection="column"
         padding={4}
       >
-        <Typography textSize="2xl" fontWeight="bold" render="h2">
+        <Typography fontSize="2xl" fontWeight="bold" render="h2">
           TODO {session.name}
         </Typography>
         <div hx-sse:connect="/stream">

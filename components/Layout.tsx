@@ -1,10 +1,9 @@
-import { Html, Title, UniversalLayout, utility } from "@dldc/hono-ui";
-import { css } from "hono/css";
-import { type FC, Fragment } from "hono/jsx";
+import { css, Html, Title, UniversalLayout } from "@dldc/hono-ui";
+import { type Child, type FC, Fragment } from "hono/jsx";
 
 type LayoutProps = {
   title?: string;
-  children: unknown;
+  children: Child;
 };
 
 export const Layout: FC<LayoutProps> = (
@@ -24,11 +23,7 @@ export const Layout: FC<LayoutProps> = (
         </Fragment>
       }
     >
-      <UniversalLayout
-        class={css`
-          ${utility.rowGap(4)};
-        `}
-      >
+      <UniversalLayout class={css({ rowGap: 4 })}>
         <Title href="/">
           Miniquizz
         </Title>

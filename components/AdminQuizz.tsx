@@ -14,7 +14,7 @@ export const AdminQuizz: FC<{ state: QuizzState }> = ({ state }) => {
   }
   state satisfies never;
   return (
-    <Stack direction="column">
+    <Stack flexDirection="column">
       <div>Unknown state</div>
       <Button {...adminActionProps({ type: "Reset" })}>
         Reset

@@ -1,12 +1,4 @@
-import {
-  Button,
-  FormField,
-  htmlx,
-  Input,
-  Paper,
-  Stack,
-  Typography,
-} from "@dldc/hono-ui";
+import { Button, FormField, htmlx, Input, Paper, Stack, Typography } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
 import { Layout } from "../components/Layout.tsx";
 
@@ -24,15 +16,15 @@ export const AdminLoginPage: FC<AdminLoginPageProps> = (
         flexDirection="column"
         padding={4}
       >
-        <Typography textSize="2xl" fontWeight="bold" render="h2">
+        <Typography fontSize="2xl" fontWeight="bold" render="h2">
           Admin access
         </Typography>
         <htmlx.form method="post" action="/admin">
-          <Stack direction="column" gap={4} align="stretch">
+          <Stack flexDirection="column" gap={4} alignItems="stretch">
             <FormField
               id="admin-password"
               label="Password"
-              name="password"
+              // name="password"
               error={invalidPassword ? "Invalid password" : undefined}
             >
               <Input

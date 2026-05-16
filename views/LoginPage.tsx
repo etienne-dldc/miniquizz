@@ -10,8 +10,8 @@ export const LoginPage = () => {
         padding={4}
       >
         <htmlx.form method="post" action="/login">
-          <Stack direction="column" gap={4} align="stretch">
-            <FormField id="login-name" label="Name" name="name">
+          <Stack flexDirection="column" gap={4} alignItems="stretch">
+            <FormField id="login-name" label="Name">
               <Input
                 id="login-name"
                 name="name"

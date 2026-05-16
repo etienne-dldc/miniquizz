@@ -5,8 +5,8 @@ export const LogoutButton = () => {
   return (
     <Stack
       render={<form method="post" action="/logout" />}
-      direction="column"
-      align="center"
+      flexDirection="column"
+      alignItems="center"
     >
       <Button type="submit" variant="ghost">
         <Icon icon={LogOut} />

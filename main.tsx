@@ -9,12 +9,7 @@ import { AdminQuizz } from "./components/AdminQuizz.tsx";
 import { UserQuizz } from "./components/UserQuizz.tsx";
 import denoJson from "./deno.json" with { type: "json" };
 import { adminActionSchema } from "./logic/adminActionSchema.ts";
-import {
-  appEnv,
-  SESSION_COOKIE_NAME,
-  SESSIONS_STORAGE_KEY,
-  STATE_STORAGE_KEY,
-} from "./logic/env.ts";
+import { appEnv, SESSION_COOKIE_NAME, SESSIONS_STORAGE_KEY, STATE_STORAGE_KEY } from "./logic/env.ts";
 import { createQuizzStore } from "./logic/quizzStore.ts";
 import { createSessions } from "./logic/sessions.ts";
 import { userActionSchema } from "./logic/userActionSchema.ts";
@@ -59,9 +54,7 @@ app.use("*", cacheControlMiddleware);
 
 app.onError((err, c) => {
   console.error(err);
-  const message = err instanceof Error
-    ? err.message
-    : "An unexpected error occurred";
+  const message = err instanceof Error ? err.message : "An unexpected error occurred";
 
   return c.html(
     <ErrorPage

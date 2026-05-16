@@ -3,8 +3,8 @@ import { adminActionProps } from "../../logic/actionProps.ts";
 
 export const Idle = () => {
   return (
-    <Stack direction="column">
-      <Stack direction="column" gap={2}>
+    <Stack flexDirection="column">
+      <Stack flexDirection="column" gap={2}>
         <Button {...adminActionProps({ type: "Reset" })}>
           Reset
         </Button>
