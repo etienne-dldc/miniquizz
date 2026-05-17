@@ -1,21 +1,15 @@
-import { css, Link, Paper } from "@dldc/hono-ui";
+import { Link, Paper, Typography } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
 import { Layout } from "../components/Layout.tsx";
 
 export const NotFoundPage: FC = () => {
-  const titleClass = css({
-    fontSize: "3xl",
-    fontWeight: "bold",
-    color: "white",
-  });
-
   return (
     <Layout>
-      <Paper class={css({ display: "flex", gap: 2, padding: 3, flexDirection: "column" })}>
-        <h1 class={titleClass}>404</h1>
-        <p class={css({ fontSize: "xl", color: "gray-200" })}>
+      <Paper flexDirection="column" gap={2} padding={3}>
+        <Typography fontSize="3xl" color="white" fontWeight="bold">404</Typography>
+        <Typography fontSize="xl" color="gray-200">
           Page not found.
-        </p>
+        </Typography>
         <Link href="/">Go back to home</Link>
       </Paper>
     </Layout>
