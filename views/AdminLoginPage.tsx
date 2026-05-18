@@ -1,20 +1,22 @@
-import { Button, FormField, htmlx, Input, Paper, Stack, Typography } from "@dldc/hono-ui";
+import { Button, css, FormField, htmlx, Input, Paper, Stack, Typography } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
 import { Layout } from "../components/Layout.tsx";
 
 type AdminLoginPageProps = {
+  title: string;
   invalidPassword?: boolean;
 };
 
 export const AdminLoginPage: FC<AdminLoginPageProps> = (
-  { invalidPassword },
+  { invalidPassword, title },
 ) => {
   return (
-    <Layout title="Admin Login">
+    <Layout title={title} class={css({ display: "grid", placeItems: "center" })}>
       <Paper
         gap={4}
         flexDirection="column"
         padding={4}
+        class={css({ minWidth: "[min(100vw - 2rem, 30rem)]" })}
       >
         <Typography fontSize="2xl" fontWeight="bold" render="h2">
           Admin access

@@ -1,6 +1,7 @@
 {
   "name": "Schema Coverage Quiz",
   "description": "Test dataset covering all quizzSchema content block variants and multiple answer patterns.",
+  "ratio": 1.5,
   "questions": [
     {
       "question": [

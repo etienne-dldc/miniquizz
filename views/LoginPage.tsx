@@ -1,13 +1,18 @@
-import { Button, FormField, htmlx, Input, Paper, Stack } from "@dldc/hono-ui";
+import { Button, css, FormField, htmlx, Input, Paper, Stack } from "@dldc/hono-ui";
 import { Layout } from "../components/Layout.tsx";
 
-export const LoginPage = () => {
+interface LoginPageProps {
+  title: string;
+}
+
+export const LoginPage = ({ title }: LoginPageProps) => {
   return (
-    <Layout title="Login">
+    <Layout title={title} class={css({ display: "grid", placeItems: "center" })}>
       <Paper
         gap={4}
         flexDirection="column"
         padding={4}
+        class={css({ minWidth: "[min(100vw - 2rem, 30rem)]" })}
       >
         <htmlx.form method="post" action="/login">
           <Stack flexDirection="column" gap={4} alignItems="stretch">

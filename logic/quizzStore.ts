@@ -23,7 +23,7 @@ export type QuizzSessionState = {
 
 export interface QuizzStateProgress {
   questionIndex: number;
-  step: "question" | "timesup" | "answer";
+  step: "question" | "timesup" | "answer" | "explanation";
 }
 
 export interface QuizzState {
@@ -84,7 +84,7 @@ export async function createQuizzStore(
       if (state.state !== "running") {
         return;
       }
-      const prevProgress = computePrevProgress(state.progress);
+      const prevProgress = computePrevProgress(state.progress, state.quizz);
       if (prevProgress === state.progress) {
         return;
       }
@@ -192,7 +192,10 @@ function computeNextProgress(progress: QuizzStateProgress, quizz: Quizz): QuizzS
   if (progress.step === "timesup") {
     return { ...progress, step: "answer" };
   }
-  progress.step satisfies "answer";
+  const currentQuestion = quizz.questions[progress.questionIndex];
+  if (progress.step === "answer" && currentQuestion.explanation) {
+    return { ...progress, step: "explanation" };
+  }
   const nextIndex = progress.questionIndex + 1;
   if (nextIndex >= quizz.questions.length) {
     return progress;
@@ -200,17 +203,24 @@ function computeNextProgress(progress: QuizzStateProgress, quizz: Quizz): QuizzS
   return { questionIndex: nextIndex, step: "question" };
 }
 
-function computePrevProgress(progress: QuizzStateProgress): QuizzStateProgress {
+function computePrevProgress(progress: QuizzStateProgress, quizz: Quizz): QuizzStateProgress {
+  if (progress.step === "explanation") {
+    return { ...progress, step: "answer" };
+  }
   if (progress.step === "answer") {
     return { ...progress, step: "timesup" };
   }
   if (progress.step === "timesup") {
     return { ...progress, step: "question" };
   }
-  progress.step satisfies "question";
   const prevIndex = progress.questionIndex - 1;
   if (prevIndex < 0) {
     return progress;
   }
-  return { questionIndex: prevIndex, step: "question" };
+  const prevQuestion = quizz.questions[prevIndex];
+  const prevHasExplanation = !!prevQuestion.explanation;
+  if (prevHasExplanation) {
+    return { questionIndex: prevIndex, step: "explanation" };
+  }
+  return { questionIndex: prevIndex, step: "answer" };
 }

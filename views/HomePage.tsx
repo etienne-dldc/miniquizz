@@ -1,4 +1,4 @@
-import { Paper, Typography } from "@dldc/hono-ui";
+import { css, Paper, Typography } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
 import { Layout } from "../components/Layout.tsx";
 import { LogoutButton } from "../components/LogoutButton.tsx";
@@ -13,7 +13,7 @@ type HomePageProps = {
 
 export const HomePage: FC<HomePageProps> = ({ session, state }) => {
   return (
-    <Layout title="Apps">
+    <Layout title={state.quizz.name} class={css({ display: "grid", gridTemplateRows: "1fr auto", gap: 4 })}>
       <Paper
         gap={4}
         flexDirection="column"

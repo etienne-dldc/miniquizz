@@ -4,7 +4,7 @@ import { Layout } from "../components/Layout.tsx";
 
 export const NotFoundPage: FC = () => {
   return (
-    <Layout>
+    <Layout title="Page not found">
       <Paper flexDirection="column" gap={2} padding={3}>
         <Typography fontSize="3xl" color="white" fontWeight="bold">404</Typography>
         <Typography fontSize="xl" color="gray-200">

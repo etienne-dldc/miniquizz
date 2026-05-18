@@ -1,6 +1,6 @@
 import { Stack } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
-import type { QuizzOption } from "../../logic/quizzSchema.ts";
+import type { QuizzOption } from "../logic/quizzSchema.ts";
 import { OptionItem, type OptionItemState } from "./OptionItem.tsx";
 
 interface QuestionOptionsProps {

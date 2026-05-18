@@ -13,7 +13,7 @@
     "scripts:clear-storage": "deno run --config deno.json -A scripts/clearStorage.ts"
   },
   "imports": {
-    "@dldc/hono-ui": "jsr:@dldc/hono-ui@^2.1.0",
+    "@dldc/hono-ui": "jsr:@dldc/hono-ui@^2.1.1",
     "@dldc/pubsub": "jsr:@dldc/pubsub@^7.1.0",
     "@dldc/zenjson": "jsr:@dldc/zenjson@^3.0.1",
     "@hono/hono": "jsr:@hono/hono@^4.12.19",

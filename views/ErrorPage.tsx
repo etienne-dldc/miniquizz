@@ -1,4 +1,4 @@
-import { css, Link, Paper, Stack, Typography } from "@dldc/hono-ui";
+import { css, Link, Paper, Typography } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
 import { Layout } from "../components/Layout.tsx";
 
@@ -27,14 +27,11 @@ export const ErrorPage: FC<ErrorPageProps> = ({
   returnLabel = "Back",
 }) => {
   return (
-    <Layout>
+    <Layout title={title}>
       <Link href={returnPath}>
         <span class={linkClass}>← {returnLabel}</span>
       </Link>
       <Paper flexDirection="column" gap={3} padding={2}>
-        <Stack flexDirection="column" gap={1}>
-          <Typography fontSize="2xl" fontWeight="bold" color="red-400">{title}</Typography>
-        </Stack>
         <Typography fontSize="lg" color="gray-200">
           {message}
         </Typography>

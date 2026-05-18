@@ -1,17 +1,18 @@
-import { css, Html, Title, UniversalLayout } from "@dldc/hono-ui";
+import { Box, css, Html, Title } from "@dldc/hono-ui";
 import { type Child, type FC, Fragment } from "hono/jsx";
 
 type LayoutProps = {
-  title?: string;
+  title: string;
   children: Child;
+  class?: string | Promise<string>;
 };
 
 export const Layout: FC<LayoutProps> = (
-  { title, children },
+  { title, children, class: className },
 ) => {
   return (
     <Html
-      title={title ? `${title} - Miniquizz` : "Miniquizz"}
+      title={title}
       heads={
         <Fragment>
           <link
@@ -21,15 +22,18 @@ export const Layout: FC<LayoutProps> = (
           <script src="/public/libs/htmx.4.0.0-beta-3.min.js" />
           <script src="/public/libs/hx-sse.4.0.0-beta-3.min.js" />
           <script src="/public/utils/cleanup-css.js" />
+          <script src="/public/utils/autofit.js" />
         </Fragment>
       }
     >
-      <UniversalLayout class={css({ rowGap: 4 })}>
-        <Title href="/">
-          Miniquizz
+      <Box class={css({ gap: 4, padding: 4, display: "grid", position: "absolute", inset: 0, gridTemplateRows: "auto 1fr" })}>
+        <Title href="/" class={css({ textAlign: "center" })}>
+          {title}
         </Title>
-        {children}
-      </UniversalLayout>
+        <Box class={[className]}>
+          {children}
+        </Box>
+      </Box>
     </Html>
   );
 };

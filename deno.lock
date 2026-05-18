@@ -3,7 +3,7 @@
   "specifiers": {
     "jsr:@dldc/css-builder@^1.6.0": "1.6.0",
     "jsr:@dldc/erreur@^7.1.1": "7.1.1",
-    "jsr:@dldc/hono-ui@^2.1.0": "2.1.0",
+    "jsr:@dldc/hono-ui@^2.1.1": "2.1.1",
     "jsr:@dldc/pubsub@^7.1.0": "7.1.0",
     "jsr:@dldc/zenjson@^3.0.1": "3.0.1",
     "jsr:@hono/hono@^4.12.19": "4.12.19",
@@ -29,8 +29,8 @@
     "@dldc/erreur@7.1.1": {
       "integrity": "9ba954ae0654e4ed003959c77aaa009fdf6c64f60bf4cfec33b134556ab0d6da"
     },
-    "@dldc/hono-ui@2.1.0": {
-      "integrity": "12658d6feb8fe88eb383af80c3909faaf1d62f9c4f680b8285b18595986b74d1",
+    "@dldc/hono-ui@2.1.1": {
+      "integrity": "ce15b69a377be26cc39fe3fe0e9d44c0b17529f0eece27f18e71433387d82f7f",
       "dependencies": [
         "jsr:@dldc/css-builder",
         "jsr:@dldc/hono-ui",
@@ -374,7 +374,7 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@dldc/hono-ui@^2.1.0",
+      "jsr:@dldc/hono-ui@^2.1.1",
       "jsr:@dldc/pubsub@^7.1.0",
       "jsr:@dldc/zenjson@^3.0.1",
       "jsr:@hono/hono@^4.12.19",

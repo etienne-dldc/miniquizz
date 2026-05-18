@@ -1,5 +1,4 @@
 import { Stack } from "@dldc/hono-ui";
-import type { FC } from "hono/jsx";
 import type { QuizzContent } from "../logic/quizzSchema.ts";
 import { QuizzContentBlockDisplay } from "./ContentDisplay/QuizzContentBlockDisplay.tsx";
 
@@ -7,8 +6,8 @@ interface ContentDisplayProps {
   content: QuizzContent;
 }
 
-export const ContentDisplay: FC<ContentDisplayProps> = (
-  { content },
+export const ContentDisplay = (
+  { content }: ContentDisplayProps,
 ) => {
   if (content.length === 0) {
     return null;

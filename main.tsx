@@ -76,7 +76,7 @@ app.get("/", async (c) => {
   const session = c.get("session");
   if (!session) {
     return await c.html(
-      <LoginPage />,
+      <LoginPage title={store.getState().quizz.name} />,
     );
   }
 
@@ -88,7 +88,7 @@ app.get("/", async (c) => {
 app.get("/admin", (c) => {
   const session = c.get("session");
   if (!session) {
-    return c.html(<AdminLoginPage />);
+    return c.html(<AdminLoginPage title={store.getState().quizz.name} />);
   }
 
   if (!session.isAdmin) {
@@ -117,7 +117,7 @@ app.post(
 
     const { password } = c.req.valid("form");
     if (password !== appEnv.adminPassword) {
-      return c.html(<AdminLoginPage invalidPassword />, 401);
+      return c.html(<AdminLoginPage invalidPassword title={store.getState().quizz.name} />, 401);
     }
 
     const adminSession = sessions.create("Admin", true);

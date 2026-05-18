@@ -41,6 +41,8 @@ export const quizzSchema = v.object({
   name: v.string(),
   description: v.string(),
   questions: v.array(quizzQuestionSchema),
+  // ration of the screen to display questions
+  ratio: v.number(),
 });
 
 export type QuizzContentBlock = v.InferOutput<typeof quizzContentBlockSchema>;

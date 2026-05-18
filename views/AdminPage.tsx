@@ -1,4 +1,4 @@
-import { Paper } from "@dldc/hono-ui";
+import { css, Paper } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
 import { AdminQuizz } from "../components/AdminQuizz.tsx";
 import { Layout } from "../components/Layout.tsx";
@@ -13,15 +13,9 @@ type AdminPageProps = {
 
 export const AdminPage: FC<AdminPageProps> = ({ state, session }) => {
   return (
-    <Layout title="Admin">
-      <Paper
-        gap={4}
-        flexDirection="column"
-        padding={4}
-      >
-        <div hx-sse:connect="/admin/stream">
-          <AdminQuizz state={state} session={session} />
-        </div>
+    <Layout title={state.quizz.name} class={css({ display: "grid", gridTemplateRows: "1fr auto", gap: 4 })}>
+      <Paper hx-sse:connect="/admin/stream" class={css({ display: "grid", gridTemplateRows: "1fr", padding: 4 })}>
+        <AdminQuizz state={state} session={session} />
       </Paper>
       <LogoutButton />
     </Layout>
