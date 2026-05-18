@@ -34,6 +34,7 @@ export const quizzOptionSchema = v.object({
 export const quizzQuestionSchema = v.object({
   question: quizzContentSchema,
   options: v.array(quizzOptionSchema),
+  explanation: v.optional(quizzContentSchema),
 });
 
 export const quizzSchema = v.object({

@@ -1,24 +1,40 @@
-import { css, Stack, Typography } from "@dldc/hono-ui";
+import { css, cssVar, Stack, tokens, Typography } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
 import { userActionProps } from "../../logic/actionProps.ts";
 import type { QuizzOption } from "../../logic/quizzSchema.ts";
 import { ContentDisplay } from "../ContentDisplay.tsx";
 
+export type OptionItemState = "default" | "selected" | "correct" | "wrong" | "valid" | "invalid";
+
+const itemBg = cssVar("option-item-bg");
+const labelBg = cssVar("option-label-bg");
+const borderColor = cssVar("option-border-color");
+
 const rootClassName = css({
   position: "relative",
   cornerShape: "superellipse",
-  background: "neutral-900",
   borderWidth: "0.5px",
   borderStyle: "solid",
-  borderColor: "white/10",
   borderRadius: 2,
   padding: 3,
   transition: "border-color 120ms ease-out, background-color 120ms ease-out",
   cursor: "pointer",
+  background: itemBg,
+  borderColor: "white/10",
   selectors: {
     "&:hover": {
-      background: "neutral-800",
-      borderColor: "white/15",
+      // Lighten background on hover
+      background: `[color-mix(in srgb, ${itemBg} 97%, white)]`,
+    },
+    "&::before": {
+      content: "empty",
+      borderRadius: "inherit",
+      cornerShape: "inherit",
+      position: "absolute",
+      inset: 0,
+      borderWidth: "3px",
+      borderStyle: "solid",
+      borderColor: borderColor,
     },
   },
 });
@@ -31,38 +47,72 @@ const labelClassName = css({
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
+  background: labelBg,
   width: 7,
   height: 7,
   borderRadius: "full",
   cornerShape: "superellipse",
-  background: "neutral-700",
   color: "white",
 });
 
-const selectedClassName = css({
-  background: "blue-700",
-  borderColor: "blue-500",
-  selectors: {
-    "&:hover": {
-      background: "blue-700",
-      borderColor: "blue-500",
+const stateClassNames: Record<OptionItemState, Promise<string>> = {
+  default: css({
+    vars: {
+      [itemBg.name]: tokens.c("neutral-900"),
+      [labelBg.name]: tokens.c("neutral-700"),
+      [borderColor.name]: "transparent",
     },
-  },
-});
+  }),
+  selected: css({
+    vars: {
+      [itemBg.name]: tokens.c("neutral-800"),
+      [labelBg.name]: tokens.c("blue-500"),
+      [borderColor.name]: tokens.c("blue-500"),
+    },
+  }),
+  correct: css({
+    vars: {
+      [itemBg.name]: tokens.c("green-700"),
+      [labelBg.name]: tokens.c("green-500"),
+      [borderColor.name]: tokens.c("green-500"),
+    },
+  }),
+  wrong: css({
+    vars: {
+      [itemBg.name]: tokens.opacity(tokens.c("red-500"), 5),
+      [labelBg.name]: tokens.c("red-500"),
+      [borderColor.name]: tokens.c("red-500"),
+    },
+  }),
+  valid: css({
+    vars: {
+      [itemBg.name]: tokens.c("green-700"),
+      [labelBg.name]: tokens.c("green-500"),
+      [borderColor.name]: "transparent",
+    },
+  }),
+  invalid: css({
+    vars: {
+      [itemBg.name]: tokens.opacity(tokens.c("red-500"), 5),
+      [labelBg.name]: tokens.c("red-600"),
+      [borderColor.name]: "transparent",
+    },
+  }),
+};
 
 interface OptionItemProps {
   index: number;
   option: QuizzOption;
   label: string;
-  selected: boolean;
+  state: OptionItemState;
 }
 
-export const OptionItem: FC<OptionItemProps> = ({ index, option, label, selected }) => {
+export const OptionItem: FC<OptionItemProps> = ({ index, option, label, state }) => {
   return (
     <Stack
       flexDirection="column"
       gap={2}
-      class={[rootClassName, selected && selectedClassName]}
+      class={[rootClassName, stateClassNames[state]]}
       {...userActionProps({ type: "Vote", optionIndex: index })}
     >
       <Typography fontSize="lg" fontWeight="bold" class={labelClassName}>

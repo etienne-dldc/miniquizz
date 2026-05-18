@@ -3,7 +3,7 @@ import type { FC } from "hono/jsx";
 import { AdminQuizz } from "../components/AdminQuizz.tsx";
 import { Layout } from "../components/Layout.tsx";
 import { LogoutButton } from "../components/LogoutButton.tsx";
-import type { QuizzState } from "../logic/quizzReducer.ts";
+import type { QuizzState } from "../logic/quizzStore.ts";
 import type { Session } from "../logic/sessions.ts";
 
 type AdminPageProps = {

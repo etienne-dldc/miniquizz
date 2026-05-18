@@ -25,8 +25,8 @@ import { HomePage } from "./views/HomePage.tsx";
 import { LoginPage } from "./views/LoginPage.tsx";
 import { NotFoundPage } from "./views/NotFoundPage.tsx";
 
-console.log(`Starting Miniquizz v${denoJson.version}`);
-console.log(
+console.info(`Starting Miniquizz v${denoJson.version}`);
+console.info(
   `OpenTelemetry ${appEnv.otel.denoEnabled ? "enabled" : "disabled"}`,
 );
 
@@ -241,5 +241,5 @@ app.post("/admin/action", sValidator("form", adminActionSchema), (c) => {
   return c.text("OK");
 });
 
-console.log(`Miniquizz listening on :${appEnv.port}`);
+console.info(`Miniquizz listening on :${appEnv.port}`);
 Deno.serve({ port: appEnv.port }, app.fetch);

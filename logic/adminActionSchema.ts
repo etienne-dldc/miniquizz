@@ -10,6 +10,9 @@ export const adminActionSchema = v.variant("type", [
   v.object({
     type: v.literal("Next"),
   }),
+  v.object({
+    type: v.literal("Prev"),
+  }),
 ]);
 
 export type AdminAction = v.InferOutput<typeof adminActionSchema>;

@@ -46,6 +46,12 @@
           ],
           "isCorrect": false
         }
+      ],
+      "explanation": [
+        {
+          "type": "text",
+          "text": "HTML stands for HyperText Markup Language. It is the standard markup language used to create web pages and is the foundation of web development."
+        }
       ]
     },
     {
@@ -96,6 +102,12 @@
           ],
           "isCorrect": false
         }
+      ],
+      "explanation": [
+        {
+          "type": "text",
+          "text": "In JavaScript, the falsy values are: false, 0, -0, 0n, \"\", null, undefined, and NaN. Arrays and strings are truthy even if empty, and \"0\" is a non-empty string so it's truthy."
+        }
       ]
     },
     {
@@ -136,6 +148,12 @@
             }
           ],
           "isCorrect": false
+        }
+      ],
+      "explanation": [
+        {
+          "type": "text",
+          "text": "The function calculates the sum of integers from 1 to n. For n=4: 1 + 2 + 3 + 4 = 10. This is also known as the triangular number formula: n(n+1)/2."
         }
       ]
     },
@@ -178,6 +196,12 @@
             }
           ],
           "isCorrect": false
+        }
+      ],
+      "explanation": [
+        {
+          "type": "text",
+          "text": "Deno is a modern runtime for JavaScript and TypeScript, created by Ryan Dahl (the original creator of Node.js). The dinosaur logo represents the Deno project."
         }
       ]
     },
@@ -225,6 +249,12 @@
           ],
           "isCorrect": false
         }
+      ],
+      "explanation": [
+        {
+          "type": "text",
+          "text": "The main HTTP methods are GET (retrieve data), POST (submit data), PUT (update resource), PATCH (partial update), DELETE (remove resource), and HEAD (like GET but without body). FETCH and UPDATE are not standard HTTP methods."
+        }
       ]
     },
     {
@@ -261,6 +291,12 @@
             }
           ],
           "isCorrect": false
+        }
+      ],
+      "explanation": [
+        {
+          "type": "text",
+          "text": "Arrays in JavaScript use square brackets []. Curly braces {} define objects, and parentheses () are used for grouping expressions or function calls. The comma operator in (1, 2, 3) evaluates to just 3."
         }
       ]
     }

@@ -7,13 +7,14 @@ import { QuestionOptions } from "./Question/QuestionOptions.tsx";
 interface QuestionProps {
   question: QuizzQuestion;
   selectedOptionIndex?: number | null;
+  showAnswer?: boolean;
 }
 
-export const Question: FC<QuestionProps> = ({ question, selectedOptionIndex }) => {
+export const Question: FC<QuestionProps> = ({ question, selectedOptionIndex, showAnswer }) => {
   return (
     <Stack flexDirection="column" gap={6} class={css({ paddingY: 3 })}>
       <ContentDisplay content={question.question} />
-      <QuestionOptions options={question.options} selectedOptionIndex={selectedOptionIndex} />
+      <QuestionOptions options={question.options} selectedOptionIndex={selectedOptionIndex} showAnswer={showAnswer} />
     </Stack>
   );
 };
