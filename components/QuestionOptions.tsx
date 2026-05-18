@@ -1,23 +1,24 @@
-import { Stack } from "@dldc/hono-ui";
+import { Box, css, CssObjProperties } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
-import type { QuizzOption } from "../logic/quizzSchema.ts";
+import type { QuizzOption, QuizzQuestionLayout } from "../logic/quizzSchema.ts";
 import { OptionItem, type OptionItemState } from "./OptionItem.tsx";
 
 interface QuestionOptionsProps {
   options: QuizzOption[];
+  layout: QuizzQuestionLayout | undefined;
   selectedOptionIndex?: number | null;
   showAnswer?: boolean;
 }
 
 const LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-export const QuestionOptions: FC<QuestionOptionsProps> = ({ options, selectedOptionIndex, showAnswer }) => {
+export const QuestionOptions: FC<QuestionOptionsProps> = ({ options, layout, selectedOptionIndex, showAnswer }) => {
   if (options.length === 0) {
     return null;
   }
 
   return (
-    <Stack flexDirection="column" gap={5}>
+    <Box class={css({ gap: 5, display: "grid", padding: 5, ...getOptionLayout(options.length, layout) })}>
       {options.map((option, index) => {
         const optionLabel = LABELS[index % LABELS.length];
         return (
@@ -30,9 +31,28 @@ export const QuestionOptions: FC<QuestionOptionsProps> = ({ options, selectedOpt
           />
         );
       })}
-    </Stack>
+    </Box>
   );
 };
+
+function getOptionLayout(optionsCount: number, layout: QuizzQuestionLayout | undefined): CssObjProperties {
+  if (layout === "horizontal") {
+    return { gridTemplateColumns: "auto", gridTemplateRows: `repeat(${optionsCount}, 1fr)` };
+  }
+  if (layout === "vertical") {
+    return { gridTemplateColumns: `repeat(${optionsCount}, 1fr)`, gridTemplateRows: "auto" };
+  }
+  if (optionsCount === 2) {
+    return { gridTemplateColumns: "auto", gridTemplateRows: "repeat(2, 1fr)" };
+  }
+  if (optionsCount === 3) {
+    return { gridTemplateColumns: "auto", gridTemplateRows: "repeat(3, 1fr)" };
+  }
+  if (optionsCount === 4) {
+    return { gridTemplateColumns: "repeat(2, 1fr)", gridTemplateRows: "repeat(2, 1fr)" };
+  }
+  return { gridTemplateColumns: "auto", gridTemplateRows: `repeat(${optionsCount}, 1fr)` };
+}
 
 function getOptionItemState(
   index: number,

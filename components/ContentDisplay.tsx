@@ -3,13 +3,13 @@ import type { QuizzContent } from "../logic/quizzSchema.ts";
 import { QuizzContentBlockDisplay } from "./ContentDisplay/QuizzContentBlockDisplay.tsx";
 
 interface ContentDisplayProps {
-  content: QuizzContent;
+  content: QuizzContent | null;
 }
 
 export const ContentDisplay = (
   { content }: ContentDisplayProps,
 ) => {
-  if (content.length === 0) {
+  if (!content || content.length === 0) {
     return null;
   }
   return (

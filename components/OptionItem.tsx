@@ -13,7 +13,7 @@ const borderColor = cssVar("option-border-color");
 const rootClassName = css({
   position: "relative",
   cornerShape: "superellipse",
-  borderWidth: "0.5px",
+  borderWidth: "1px",
   borderStyle: "solid",
   borderRadius: 2,
   padding: 3,
@@ -43,16 +43,18 @@ const labelClassName = css({
   position: "absolute",
   top: 0,
   left: 0,
-  transform: "translate(-20%, -20%)",
+  transform: "translate(-30%, -30%)",
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
   background: labelBg,
-  width: 7,
-  height: 7,
+  width: 8,
+  height: 8,
   borderRadius: "full",
   cornerShape: "superellipse",
   color: "white",
+  fontSize: "xl",
+  fontWeight: "bold",
 });
 
 const stateClassNames: Record<OptionItemState, Promise<string>> = {
@@ -86,7 +88,7 @@ const stateClassNames: Record<OptionItemState, Promise<string>> = {
   }),
   valid: css({
     vars: {
-      [itemBg.name]: tokens.c("green-700"),
+      [itemBg.name]: tokens.c("green-600"),
       [labelBg.name]: tokens.c("green-500"),
       [borderColor.name]: "transparent",
     },
@@ -112,10 +114,12 @@ export const OptionItem: FC<OptionItemProps> = ({ index, option, label, state })
     <Stack
       flexDirection="column"
       gap={2}
+      justifyContent="center"
+      alignItems="center"
       class={[rootClassName, stateClassNames[state]]}
       {...userActionProps({ type: "Vote", optionIndex: index })}
     >
-      <Typography fontSize="lg" fontWeight="bold" class={labelClassName}>
+      <Typography class={labelClassName}>
         {label}
       </Typography>
       <ContentDisplay content={option.content} />

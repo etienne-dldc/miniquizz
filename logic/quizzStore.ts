@@ -102,7 +102,7 @@ export async function createQuizzStore(
       if (action.optionIndex < 0 || action.optionIndex >= state.quizz.questions[state.progress.questionIndex].options.length) {
         return;
       }
-      if (state.progress.step === "answer") {
+      if (state.progress.step !== "question" && state.progress.step !== "timesup") {
         return;
       }
       let sessionState = state.sessions.get(session.id);
@@ -149,7 +149,8 @@ function loadState(storageKey: string, quizz: Quizz): QuizzState {
     return createInitialQuizzState(quizz);
   }
   try {
-    return restore(JSON.parse(data)) as QuizzState;
+    const restored = restore(JSON.parse(data)) as QuizzState;
+    return { ...restored, quizz };
   } catch (err) {
     console.error("Failed to parse quizz state from localStorage", err);
     return createInitialQuizzState(quizz);

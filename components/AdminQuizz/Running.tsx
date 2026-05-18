@@ -18,20 +18,43 @@ export const Running: FC<RunningProps> = ({ state, session }) => {
   const currentVote = sessionState?.votes.get(state.progress.questionIndex);
 
   return (
-    <Box class={css({ display: "grid", gap: 4, gridTemplateRows: "1fr auto" })}>
-      <RatioScreen ratio={state.quizz.ratio}>
-        {state.progress.step === "explanation"
-          ? <ContentDisplay content={currentQuestion.question} />
-          : state.progress.step === "timesup"
-          ? <Typography class={css({ textAlign: "center" })} fontSize="3xl" fontWeight="bold">🥁🥁🥁🥁🥁</Typography>
-          : <ContentDisplay content={currentQuestion.question} />}
-      </RatioScreen>
+    <Box
+      class={css({
+        display: "grid",
+        gap: 4,
+        gridTemplateRows: "1fr auto",
+      })}
+    >
+      <Box
+        class={css({
+          display: "grid",
+          gap: 4,
+          gridTemplateRows: "1fr 1fr",
+          media: {
+            "@media (min-width: 1700px)": {
+              gridTemplateRows: "auto",
+              gridTemplateColumns: "1fr 1fr",
+            },
+          },
+        })}
+      >
+        <RatioScreen ratio={state.quizz.ratio} center class={css({ padding: 5 })}>
+          {state.progress.step === "explanation"
+            ? <ContentDisplay content={currentQuestion.explanation ?? null} />
+            : state.progress.step === "timesup"
+            ? <Typography class={css({ textAlign: "center" })} fontSize="[4rem]" fontWeight="bold">🥁 🥁 🥁 🥁 🥁</Typography>
+            : <ContentDisplay content={currentQuestion.question} />}
+        </RatioScreen>
+        <RatioScreen ratio={state.quizz.ratio}>
+          <QuestionOptions
+            options={currentQuestion.options}
+            layout={currentQuestion.layout}
+            selectedOptionIndex={currentVote}
+            showAnswer={state.progress.step === "answer" || state.progress.step === "explanation"}
+          />
+        </RatioScreen>
+      </Box>
       <Stack flexDirection="column" gap={4} class={css({ maxWidth: "[min(100vw - 4rem, 60rem)]", margin: "[auto]", width: "full" })}>
-        <QuestionOptions
-          options={currentQuestion.options}
-          selectedOptionIndex={currentVote}
-          showAnswer={state.progress.step === "answer"}
-        />
         <InlineGroup class={css({ display: "grid", gridTemplateColumns: "1fr 1fr" })}>
           <Button {...adminActionProps({ type: "Prev" }, "ArrowLeft")}>
             Prev

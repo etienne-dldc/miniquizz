@@ -6,10 +6,13 @@
     {
       "question": [
         {
-          "type": "large-text",
-          "text": "What does HTML stand for?"
+          "type": "text",
+          "text": "What does HTML stand for?",
+          "size": 3,
+          "centered": true
         }
       ],
+      "layout": "horizontal",
       "options": [
         {
           "content": [
@@ -47,30 +50,26 @@
           ],
           "isCorrect": false
         }
-      ],
-      "explanation": [
-        {
-          "type": "text",
-          "text": "HTML stands for HyperText Markup Language. It is the standard markup language used to create web pages and is the foundation of web development."
-        }
       ]
     },
     {
       "question": [
         {
           "type": "text",
-          "text": "Which JavaScript values are falsy?"
+          "text": "Which JavaScript values are falsy?",
+          "size": 2
         },
         {
-          "type": "code-line",
-          "code": "if (value) { /* truthy */ }"
+          "type": "code",
+          "code": "if (value) { /* truthy */ }",
+          "size": 2
         }
       ],
       "options": [
         {
           "content": [
             {
-              "type": "code-line",
+              "type": "code",
               "code": "0"
             }
           ],
@@ -79,7 +78,7 @@
         {
           "content": [
             {
-              "type": "code-line",
+              "type": "code",
               "code": "\"\""
             }
           ],
@@ -88,7 +87,7 @@
         {
           "content": [
             {
-              "type": "code-line",
+              "type": "code",
               "code": "[]"
             }
           ],
@@ -97,7 +96,7 @@
         {
           "content": [
             {
-              "type": "code-line",
+              "type": "code",
               "code": "\"0\""
             }
           ],
@@ -107,7 +106,8 @@
       "explanation": [
         {
           "type": "text",
-          "text": "In JavaScript, the falsy values are: false, 0, -0, 0n, \"\", null, undefined, and NaN. Arrays and strings are truthy even if empty, and \"0\" is a non-empty string so it's truthy."
+          "text": "In JavaScript, the falsy values are: false, 0, -0, 0n, \"\", null, undefined, and NaN. Arrays and strings are truthy even if empty, and \"0\" is a non-empty string so it's truthy.",
+          "size": 2
         }
       ]
     },
@@ -115,18 +115,20 @@
       "question": [
         {
           "type": "text",
-          "text": "What will this TypeScript function return for n = 4?"
+          "text": "What will this TypeScript function return for n = 4?",
+          "size": 1.6
         },
         {
-          "type": "code-block",
-          "code": "function sumTo(n: number): number {\n  let sum = 0;\n  for (let i = 1; i <= n; i++) sum += i;\n  return sum;\n}"
+          "type": "code",
+          "code": "function sumTo(n: number): number {\n  let sum = 0;\n  for (let i = 1; i <= n; i++) sum += i;\n  return sum;\n}",
+          "size": 1.4
         }
       ],
       "options": [
         {
           "content": [
             {
-              "type": "code-line",
+              "type": "code",
               "code": "6"
             }
           ],
@@ -135,7 +137,7 @@
         {
           "content": [
             {
-              "type": "code-line",
+              "type": "code",
               "code": "10"
             }
           ],
@@ -144,7 +146,7 @@
         {
           "content": [
             {
-              "type": "code-line",
+              "type": "code",
               "code": "16"
             }
           ],
@@ -154,7 +156,8 @@
       "explanation": [
         {
           "type": "text",
-          "text": "The function calculates the sum of integers from 1 to n. For n=4: 1 + 2 + 3 + 4 = 10. This is also known as the triangular number formula: n(n+1)/2."
+          "text": "The function calculates the sum of integers from 1 to n. For n=4: 1 + 2 + 3 + 4 = 10. This is also known as the triangular number formula: n(n+1)/2.",
+          "size": 1.8
         }
       ]
     },
@@ -162,12 +165,14 @@
       "question": [
         {
           "type": "text",
-          "text": "Identify the logo shown in the image."
+          "text": "Identify the logo shown in the image.",
+          "size": 2
         },
         {
           "type": "image",
           "src": "/data/deno-logo.svg",
-          "alt": "A circle logo with a dinosaur silhouette"
+          "alt": "A circle logo with a dinosaur silhouette",
+          "size": 8
         }
       ],
       "options": [
@@ -210,7 +215,8 @@
       "question": [
         {
           "type": "text",
-          "text": "Select all valid HTTP methods from the list below."
+          "text": "Select all valid HTTP methods from the list below.",
+          "size": 2.5
         }
       ],
       "options": [
@@ -254,7 +260,9 @@
       "explanation": [
         {
           "type": "text",
-          "text": "The main HTTP methods are GET (retrieve data), POST (submit data), PUT (update resource), PATCH (partial update), DELETE (remove resource), and HEAD (like GET but without body). FETCH and UPDATE are not standard HTTP methods."
+          "text": "The main HTTP methods are \nGET (retrieve data), \nPOST (submit data), \nPUT (update resource), \nPATCH (partial update), \nDELETE (remove resource), \nHEAD (like GET but without body). \nFETCH and UPDATE are not standard HTTP methods.",
+          "centered": false,
+          "size": 1.5
         }
       ]
     },
@@ -269,7 +277,7 @@
         {
           "content": [
             {
-              "type": "code-line",
+              "type": "code",
               "code": "[1, 2, 3]"
             }
           ],
@@ -278,7 +286,7 @@
         {
           "content": [
             {
-              "type": "code-line",
+              "type": "code",
               "code": "{1, 2, 3}"
             }
           ],
@@ -287,7 +295,7 @@
         {
           "content": [
             {
-              "type": "code-line",
+              "type": "code",
               "code": "(1, 2, 3)"
             }
           ],
