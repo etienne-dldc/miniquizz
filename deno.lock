@@ -16,6 +16,7 @@
     "jsr:@std/path@^1.1.4": "1.1.4",
     "jsr:@valibot/valibot@^1.4.0": "1.4.0",
     "npm:@opentelemetry/api@^1.9.1": "1.9.1",
+    "npm:immer@^11.1.8": "11.1.8",
     "npm:lucide-static@^1.16.0": "1.16.0",
     "npm:shiki@^4.0.2": "4.0.2",
     "npm:type-fest@^5.6.0": "5.6.0"
@@ -205,6 +206,9 @@
     "html-void-elements@3.0.0": {
       "integrity": "sha512-bEqo66MRXsUGxWHV5IP0PUiAWwoEjba4VCzg0LjFJBpchPaTfyfCKTG6bc5F8ucKec3q5y6qOdGyYTSBEvhCrg=="
     },
+    "immer@11.1.8": {
+      "integrity": "sha512-/tbkHMW7y10Lx6i1crLjD4/OhNkRG+Fo7byZHtah0547nIeXYcpIXaUh0IAQY6gO5459qpGGYapcEOHtFXkIuA=="
+    },
     "lucide-static@1.16.0": {
       "integrity": "sha512-/EH96rDLRLNKaxuhqHHbmUPx3+qHS/kQRzI1ZGZqnxmh6ljX9yX0xC2UZlQSfBE/n84eNIaxKsv9P8sMiOdCww=="
     },
@@ -371,6 +375,7 @@
       "jsr:@std/path@^1.1.4",
       "jsr:@valibot/valibot@^1.4.0",
       "npm:@opentelemetry/api@^1.9.1",
+      "npm:immer@^11.1.8",
       "npm:lucide-static@^1.16.0",
       "npm:shiki@^4.0.2"
     ]

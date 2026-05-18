@@ -6,13 +6,14 @@ import { QuestionOptions } from "./Question/QuestionOptions.tsx";
 
 interface QuestionProps {
   question: QuizzQuestion;
+  selectedOptionIndex?: number | null;
 }
 
-export const Question: FC<QuestionProps> = ({ question }) => {
+export const Question: FC<QuestionProps> = ({ question, selectedOptionIndex }) => {
   return (
     <Stack flexDirection="column" gap={6} class={css({ paddingY: 3 })}>
       <ContentDisplay content={question.question} />
-      <QuestionOptions options={question.options} />
+      <QuestionOptions options={question.options} selectedOptionIndex={selectedOptionIndex} />
     </Stack>
   );
 };

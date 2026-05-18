@@ -5,11 +5,12 @@ import { OptionItem } from "./OptionItem.tsx";
 
 interface QuestionOptionsProps {
   options: QuizzOption[];
+  selectedOptionIndex?: number | null;
 }
 
 const LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-export const QuestionOptions: FC<QuestionOptionsProps> = ({ options }) => {
+export const QuestionOptions: FC<QuestionOptionsProps> = ({ options, selectedOptionIndex }) => {
   if (options.length === 0) {
     return null;
   }
@@ -18,7 +19,8 @@ export const QuestionOptions: FC<QuestionOptionsProps> = ({ options }) => {
     <Stack flexDirection="column" gap={5}>
       {options.map((option, index) => {
         const optionLabel = LABELS[index % LABELS.length];
-        return <OptionItem key={index} option={option} label={optionLabel} />;
+        const isSelected = selectedOptionIndex === index;
+        return <OptionItem key={index} index={index} option={option} label={optionLabel} selected={isSelected} />;
       })}
     </Stack>
   );

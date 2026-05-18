@@ -7,9 +7,10 @@
     "deps:outdated": "deno outdated",
     "deps:update": "deno outdated --update --latest --interactive",
     "check": "deno fmt --check . && deno lint . && deno check .",
-    "start": "deno run --allow-net --allow-env --allow-read --no-prompt main.tsx",
-    "dev": "ADMIN_PASSWORD=admin DATA_FOLDER_PATH=./data deno run --allow-net --allow-env --allow-read --no-prompt --watch main.tsx",
-    "test:run": "deno test --allow-all"
+    "start": "deno run --config deno.json --allow-net --allow-env --allow-read --no-prompt main.tsx",
+    "dev": "ADMIN_PASSWORD=admin DATA_FOLDER_PATH=./data deno run --config deno.json --allow-net --allow-env --allow-read --no-prompt --watch main.tsx",
+    "test:run": "deno test --allow-all",
+    "scripts:clear-storage": "deno run --config deno.json -A scripts/clearStorage.ts"
   },
   "imports": {
     "@dldc/hono-ui": "jsr:@dldc/hono-ui@^2.0.4",
@@ -21,6 +22,7 @@
     "@std/path": "jsr:@std/path@^1.1.4",
     "@valibot/valibot": "jsr:@valibot/valibot@^1.4.0",
     "hono": "jsr:@hono/hono@^4.12.19",
+    "immer": "npm:immer@^11.1.8",
     "lucide-static": "npm:lucide-static@^1.16.0",
     "shiki": "npm:shiki@^4.0.2"
   },
@@ -32,6 +34,6 @@
     "lineWidth": 140
   },
   "exclude": [
-    "public"
+    "public/libs"
   ]
 }

@@ -9,7 +9,8 @@ import { AdminQuizz } from "./components/AdminQuizz.tsx";
 import { UserQuizz } from "./components/UserQuizz.tsx";
 import denoJson from "./deno.json" with { type: "json" };
 import { adminActionSchema } from "./logic/adminActionSchema.ts";
-import { appEnv, SESSION_COOKIE_NAME, SESSIONS_STORAGE_KEY, STATE_STORAGE_KEY } from "./logic/env.ts";
+import { SESSION_COOKIE_NAME, SESSIONS_STORAGE_KEY, STATE_STORAGE_KEY } from "./logic/constants.ts";
+import { appEnv } from "./logic/env.ts";
 import { createQuizzStore } from "./logic/quizzStore.ts";
 import { createSessions } from "./logic/sessions.ts";
 import { userActionSchema } from "./logic/userActionSchema.ts";
@@ -94,7 +95,7 @@ app.get("/admin", (c) => {
     return c.redirect("/");
   }
 
-  return c.html(<AdminPage state={store.getState()} />);
+  return c.html(<AdminPage state={store.getState()} session={session} />);
 });
 
 app.post(
@@ -198,14 +199,14 @@ app.get("/admin/stream", (c) => {
     return c.text("Unauthorized", 401);
   }
   return streamSSE(c, async (stream) => {
-    await stream.writeSSE({ data: <AdminQuizz state={store.getState()} /> });
+    await stream.writeSSE({ data: <AdminQuizz state={store.getState()} session={session} /> });
 
     let queue = Promise.resolve();
     const unsub = store.subscribe((event) => {
-      if (event.type === "All" || event.type === "Admin") {
+      if (event.type === "All" || event.type === "Admin" || (event.type === "User" && event.sessionId === session.id)) {
         queue = queue.then(async () => {
           await stream.writeSSE({
-            data: <AdminQuizz state={store.getState()} />,
+            data: <AdminQuizz state={store.getState()} session={session} />,
           });
         });
       }
@@ -226,7 +227,7 @@ app.post("/action", sValidator("form", userActionSchema), (c) => {
     return c.text("Unauthorized", 401);
   }
   const action = c.req.valid("form");
-  store.dispatch(action);
+  store.dispatch({ session, action });
   return c.text("OK");
 });
 
@@ -236,7 +237,7 @@ app.post("/admin/action", sValidator("form", adminActionSchema), (c) => {
     return c.text("Unauthorized", 401);
   }
   const action = c.req.valid("form");
-  store.dispatch(action);
+  store.dispatch({ session, action });
   return c.text("OK");
 });
 

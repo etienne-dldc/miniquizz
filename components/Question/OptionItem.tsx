@@ -1,12 +1,8 @@
 import { css, Stack, Typography } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
+import { userActionProps } from "../../logic/actionProps.ts";
 import type { QuizzOption } from "../../logic/quizzSchema.ts";
 import { ContentDisplay } from "../ContentDisplay.tsx";
-
-interface OptionItemProps {
-  option: QuizzOption;
-  label: string;
-}
 
 const rootClassName = css({
   position: "relative",
@@ -43,9 +39,32 @@ const labelClassName = css({
   color: "white",
 });
 
-export const OptionItem: FC<OptionItemProps> = ({ option, label }) => {
+const selectedClassName = css({
+  background: "blue-700",
+  borderColor: "blue-500",
+  selectors: {
+    "&:hover": {
+      background: "blue-700",
+      borderColor: "blue-500",
+    },
+  },
+});
+
+interface OptionItemProps {
+  index: number;
+  option: QuizzOption;
+  label: string;
+  selected: boolean;
+}
+
+export const OptionItem: FC<OptionItemProps> = ({ index, option, label, selected }) => {
   return (
-    <Stack flexDirection="column" gap={2} class={rootClassName}>
+    <Stack
+      flexDirection="column"
+      gap={2}
+      class={[rootClassName, selected && selectedClassName]}
+      {...userActionProps({ type: "Vote", optionIndex: index })}
+    >
       <Typography fontSize="lg" fontWeight="bold" class={labelClassName}>
         {label}
       </Typography>

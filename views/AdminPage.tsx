@@ -4,12 +4,14 @@ import { AdminQuizz } from "../components/AdminQuizz.tsx";
 import { Layout } from "../components/Layout.tsx";
 import { LogoutButton } from "../components/LogoutButton.tsx";
 import type { QuizzState } from "../logic/quizzReducer.ts";
+import type { Session } from "../logic/sessions.ts";
 
 type AdminPageProps = {
   state: QuizzState;
+  session: Session;
 };
 
-export const AdminPage: FC<AdminPageProps> = ({ state }) => {
+export const AdminPage: FC<AdminPageProps> = ({ state, session }) => {
   return (
     <Layout title="Admin">
       <Paper
@@ -18,7 +20,7 @@ export const AdminPage: FC<AdminPageProps> = ({ state }) => {
         padding={4}
       >
         <div hx-sse:connect="/admin/stream">
-          <AdminQuizz state={state} />
+          <AdminQuizz state={state} session={session} />
         </div>
       </Paper>
       <LogoutButton />

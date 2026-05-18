@@ -20,6 +20,7 @@ export const Layout: FC<LayoutProps> = (
           />
           <script src="/public/libs/htmx.4.0.0-beta-3.min.js" />
           <script src="/public/libs/hx-sse.4.0.0-beta-3.min.js" />
+          <script src="/public/utils/cleanup-css.js" />
         </Fragment>
       }
     >
