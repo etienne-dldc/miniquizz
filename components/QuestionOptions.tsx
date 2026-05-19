@@ -1,4 +1,4 @@
-import { Box, css, CssObjProperties } from "@dldc/hono-ui";
+import { Box, css, type CssObjProperties } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
 import type { QuizzOption, QuizzQuestionLayout } from "../logic/quizzSchema.ts";
 import { OptionItem, type OptionItemState } from "./OptionItem.tsx";
@@ -18,7 +18,7 @@ export const QuestionOptions: FC<QuestionOptionsProps> = ({ options, layout, sel
   }
 
   return (
-    <Box class={css({ gap: 5, display: "grid", padding: 5, ...getOptionLayout(options.length, layout) })}>
+    <Box classList={css({ gap: 5, display: "grid", padding: 5, ...getOptionLayout(options.length, layout) })}>
       {options.map((option, index) => {
         const optionLabel = LABELS[index % LABELS.length];
         return (

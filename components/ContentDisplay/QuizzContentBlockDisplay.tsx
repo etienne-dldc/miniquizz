@@ -12,7 +12,7 @@ export const QuizzContentBlockDisplay = async (
   if (block.type === "text") {
     const textContent = Array.isArray(block.text) ? block.text.join("\n") : block.text;
     return (
-      <Typography class={css({ fontSize: `[${block.size}rem]`, textAlign: block.centered ? "center" : "left" })}>
+      <Typography classList={css({ fontSize: `[${block.size}rem]`, textAlign: block.centered ? "center" : "left" })}>
         {textContent.split("\n").map((line, index) => (
           <span key={index}>
             {line}
@@ -32,7 +32,7 @@ export const QuizzContentBlockDisplay = async (
       theme: "github-dark",
       rootStyle: "background-color: transparent;",
     });
-    return <Box class={css({ fontSize: `[${block.size}rem]` })} dangerouslySetInnerHTML={{ __html: codeHtml }} />;
+    return <Box classList={css({ fontSize: `[${block.size}rem]` })} dangerouslySetInnerHTML={{ __html: codeHtml }} />;
   }
   block satisfies never;
   return <span />;

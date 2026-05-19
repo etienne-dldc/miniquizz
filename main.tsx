@@ -56,6 +56,7 @@ app.use("*", cacheControlMiddleware);
 app.onError((err, c) => {
   console.error(err);
   const message = err instanceof Error ? err.message : "An unexpected error occurred";
+  const session = c.get("session");
 
   return c.html(
     <ErrorPage
@@ -63,13 +64,15 @@ app.onError((err, c) => {
       message={message}
       returnPath="/"
       returnLabel="Back"
+      session={session}
     />,
     500,
   );
 });
 
 app.notFound((c) => {
-  return c.html(<NotFoundPage />, 404);
+  const session = c.get("session");
+  return c.html(<NotFoundPage session={session} />, 404);
 });
 
 app.get("/", async (c) => {
@@ -156,6 +159,13 @@ app.post("/logout", (c) => {
   if (session) {
     sessions.delete(session.id);
   }
+  const isHtmx = c.req.header("HX-Request") === "true";
+  if (isHtmx) {
+    return c.text("Logged out", 200, {
+      "HX-Redirect": "/",
+    });
+  }
+
   deleteCookie(c, SESSION_COOKIE_NAME);
   return c.redirect("/");
 });
@@ -167,7 +177,7 @@ app.get("/stream", (c) => {
   }
   return streamSSE(c, async (stream) => {
     await stream.writeSSE({
-      data: <UserQuizz sessionId={session.id} state={store.getState()} />,
+      data: <UserQuizz session={session} state={store.getState()} />,
     });
 
     let queue = Promise.resolve();
@@ -178,7 +188,7 @@ app.get("/stream", (c) => {
       ) {
         queue = queue.then(async () => {
           await stream.writeSSE({
-            data: <UserQuizz sessionId={session.id} state={store.getState()} />,
+            data: <UserQuizz session={session} state={store.getState()} />,
           });
         });
       }

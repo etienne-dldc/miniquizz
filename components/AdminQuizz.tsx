@@ -1,25 +1,38 @@
-import { Button, Stack } from "@dldc/hono-ui";
-import type { FC } from "hono/jsx";
+import { Box, Button, css, Icon, Stack } from "@dldc/hono-ui";
+import { Play } from "lucide-static";
 import { adminActionProps } from "../logic/actionProps.ts";
 import type { QuizzState } from "../logic/quizzStore.ts";
 import type { Session } from "../logic/sessions.ts";
-import { Idle } from "./AdminQuizz/Idle.tsx";
-import { Running } from "./AdminQuizz/Running.tsx";
+import { Status } from "./AdminQuizz/Status.tsx";
+import { LiveQuizzContent } from "./LiveQuizzContent.tsx";
 
-export const AdminQuizz: FC<{ state: QuizzState; session: Session }> = ({ state, session }) => {
+interface AdminQuizzProps {
+  state: QuizzState;
+  session: Session;
+}
+
+export const AdminQuizz = ({ state, session }: AdminQuizzProps) => {
   if (state.state === "idle") {
-    return <Idle />;
+    return (
+      <Box classList={css({ display: "grid", gridTemplateRows: "1fr", placeItems: "center" })}>
+        <Stack flexDirection="column" gap={2} classList={css({ minWidth: "[min(100vw - 2rem, 30rem)]" })}>
+          <Button
+            variant="primary"
+            size={14}
+            {...adminActionProps({ type: "Start" }, "Space")}
+          >
+            <Icon icon={Play} />
+            Start
+          </Button>
+        </Stack>
+      </Box>
+    );
   }
-  if (state.state === "running") {
-    return <Running state={state} session={session} />;
-  }
-  state.state satisfies never;
+  state.state satisfies "running";
   return (
-    <Stack flexDirection="column">
-      <div>Unknown state</div>
-      <Button {...adminActionProps({ type: "Reset" })}>
-        Reset
-      </Button>
-    </Stack>
+    <Box classList={css({ display: "grid", gridTemplateRows: "1fr auto" })}>
+      <LiveQuizzContent state={state} session={session} />
+      <Status state={state} />
+    </Box>
   );
 };

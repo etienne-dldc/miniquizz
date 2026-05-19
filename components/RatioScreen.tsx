@@ -1,28 +1,27 @@
-import { Box, css } from "@dldc/hono-ui";
+import { Box, type ClassListProp, css, flattenClassList } from "@dldc/hono-ui";
 import type { Child } from "hono/jsx";
 
 interface RatioScreenProps {
   ratio: number;
   children: Child;
   center?: boolean;
-  class?: string | Promise<string>;
+  classList?: ClassListProp;
 }
 
 const SIZE = 400;
 
 export const RatioScreen = (
-  { ratio, children, center, class: className }: RatioScreenProps,
+  { ratio, children, center, classList }: RatioScreenProps,
 ) => {
   return (
-    <Box data-autofit class={css({ overflow: "hidden" })}>
+    <Box data-autofit classList={css({ overflow: "hidden" })}>
       <Box
-        class={[
+        classList={[
           css(
             {
               width: `${ratio * SIZE}px`,
               height: `${SIZE}px`,
               position: "absolute",
-              background: "white/5",
               borderRadius: 3,
               cornerShape: "superellipse",
             },
@@ -39,7 +38,7 @@ export const RatioScreen = (
                 gridTemplateRows: "1fr",
               },
           ),
-          className,
+          ...flattenClassList(classList),
         ]}
       >
         {children}

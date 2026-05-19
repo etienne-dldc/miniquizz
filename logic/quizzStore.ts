@@ -18,6 +18,7 @@ export type QuizzEvent =
   | { type: "Admin" };
 
 export type QuizzSessionState = {
+  isAdmin?: boolean;
   votes: Map<number, number>;
 };
 
@@ -107,12 +108,13 @@ export async function createQuizzStore(
       }
       let sessionState = state.sessions.get(session.id);
       if (!sessionState) {
-        sessionState = { votes: new Map() };
+        sessionState = { votes: new Map(), isAdmin: session.isAdmin };
         state.sessions.set(session.id, sessionState);
       }
       sessionState.votes.set(state.progress.questionIndex, action.optionIndex);
       saveState(state, storageKey);
       sub.emit({ type: "User", sessionId: session.id });
+      sub.emit({ type: "Admin" });
       return;
     }
 

@@ -1,12 +1,14 @@
 import { css, Link, Paper, Typography } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
 import { Layout } from "../components/Layout.tsx";
+import type { Session } from "../logic/sessions.ts";
 
 type ErrorPageProps = {
   title?: string;
   message: string;
   returnPath?: string;
   returnLabel?: string;
+  session: Session | null;
 };
 
 const linkClass = css({
@@ -25,9 +27,10 @@ export const ErrorPage: FC<ErrorPageProps> = ({
   message,
   returnPath = "/",
   returnLabel = "Back",
+  session,
 }) => {
   return (
-    <Layout title={title}>
+    <Layout title={title} showLogoutButton={!!session}>
       <Link href={returnPath}>
         <span class={linkClass}>← {returnLabel}</span>
       </Link>

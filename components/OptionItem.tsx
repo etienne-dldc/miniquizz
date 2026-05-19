@@ -18,14 +18,9 @@ const rootClassName = css({
   borderRadius: 2,
   padding: 3,
   transition: "border-color 120ms ease-out, background-color 120ms ease-out",
-  cursor: "pointer",
   background: itemBg,
   borderColor: "white/10",
   selectors: {
-    "&:hover": {
-      // Lighten background on hover
-      background: `[color-mix(in srgb, ${itemBg} 97%, white)]`,
-    },
     "&::before": {
       content: "empty",
       borderRadius: "inherit",
@@ -35,6 +30,16 @@ const rootClassName = css({
       borderWidth: "3px",
       borderStyle: "solid",
       borderColor: borderColor,
+    },
+  },
+});
+
+const interactiveClassName = css({
+  cursor: "pointer",
+  selectors: {
+    "&:hover": {
+      // Lighten background on hover
+      background: `[color-mix(in srgb, ${itemBg} 97%, white)]`,
     },
   },
 });
@@ -95,10 +100,11 @@ const stateClassNames: Record<OptionItemState, Promise<string>> = {
   }),
   invalid: css({
     vars: {
-      [itemBg.name]: tokens.opacity(tokens.c("red-500"), 5),
+      [itemBg.name]: tokens.c("neutral-900"),
       [labelBg.name]: tokens.c("red-600"),
       [borderColor.name]: "transparent",
     },
+    opacity: 0.5,
   }),
 };
 
@@ -110,16 +116,18 @@ interface OptionItemProps {
 }
 
 export const OptionItem: FC<OptionItemProps> = ({ index, option, label, state }) => {
+  const isInteractive = state === "default" || state === "selected";
+
   return (
     <Stack
       flexDirection="column"
       gap={2}
       justifyContent="center"
       alignItems="center"
-      class={[rootClassName, stateClassNames[state]]}
+      classList={[rootClassName, stateClassNames[state], isInteractive && interactiveClassName]}
       {...userActionProps({ type: "Vote", optionIndex: index })}
     >
-      <Typography class={labelClassName}>
+      <Typography classList={labelClassName}>
         {label}
       </Typography>
       <ContentDisplay content={option.content} />

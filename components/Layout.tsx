@@ -1,18 +1,22 @@
-import { Box, css, Html, Title } from "@dldc/hono-ui";
+import { Box, type ClassListProp, css, Html, Stack, Title } from "@dldc/hono-ui";
 import { type Child, type FC, Fragment } from "hono/jsx";
+import { LogoutButton } from "./LogoutButton.tsx";
 
 type LayoutProps = {
   title: string;
   children: Child;
-  class?: string | Promise<string>;
+  classList?: ClassListProp;
+  showLogoutButton: boolean;
+  headerLeftContent?: Child;
 };
 
 export const Layout: FC<LayoutProps> = (
-  { title, children, class: className },
+  { title, children, classList, showLogoutButton, headerLeftContent },
 ) => {
   return (
     <Html
       title={title}
+      classList={css({ backgroundColor: "neutral-800" })}
       heads={
         <Fragment>
           <link
@@ -26,11 +30,19 @@ export const Layout: FC<LayoutProps> = (
         </Fragment>
       }
     >
-      <Box class={css({ gap: 4, padding: 4, display: "grid", position: "absolute", inset: 0, gridTemplateRows: "auto 1fr" })}>
-        <Title href="/" class={css({ textAlign: "center" })}>
-          {title}
-        </Title>
-        <Box class={[className]}>
+      <Box classList={css({ gap: 4, padding: 4, display: "grid", position: "absolute", inset: 0, gridTemplateRows: "auto 1fr" })}>
+        <Box classList={css({ display: "grid", gridTemplateColumns: "1fr auto 1fr" })}>
+          <Stack flexDirection="row" justifyContent="flex-start" alignItems="center">
+            {headerLeftContent}
+          </Stack>
+          <Title href="/" classList={css({ textAlign: "center" })}>
+            {title}
+          </Title>
+          <Stack flexDirection="row" justifyContent="flex-end" alignItems="center">
+            {showLogoutButton && <LogoutButton />}
+          </Stack>
+        </Box>
+        <Box classList={classList}>
           {children}
         </Box>
       </Box>

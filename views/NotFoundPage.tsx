@@ -1,10 +1,14 @@
 import { Link, Paper, Typography } from "@dldc/hono-ui";
-import type { FC } from "hono/jsx";
 import { Layout } from "../components/Layout.tsx";
+import type { Session } from "../logic/sessions.ts";
 
-export const NotFoundPage: FC = () => {
+interface NotFoundPageProps {
+  session: Session | null;
+}
+
+export const NotFoundPage = ({ session }: NotFoundPageProps) => {
   return (
-    <Layout title="Page not found">
+    <Layout title="Page not found" showLogoutButton={!!session}>
       <Paper flexDirection="column" gap={2} padding={3}>
         <Typography fontSize="3xl" color="white" fontWeight="bold">404</Typography>
         <Typography fontSize="xl" color="gray-200">
