@@ -14,7 +14,7 @@ export const RatioScreen = (
   { ratio, children, center, classList }: RatioScreenProps,
 ) => {
   return (
-    <Box data-autofit classList={css({ overflow: "hidden" })}>
+    <Box data-autofit classList={css({ overflow: "hidden", position: "relative" })}>
       <Box
         classList={[
           css(

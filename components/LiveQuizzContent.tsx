@@ -24,14 +24,14 @@ export function LiveQuizzContent({ state, session }: LiveQuizzContentProps) {
         media: { "@media (min-aspect-ratio: 3/2)": { gridTemplateRows: "auto", gridTemplateColumns: "1fr 1fr" } },
       })}
     >
-      <RatioScreen ratio={state.quizz.ratio} center classList={css({ padding: 5 })}>
+      <RatioScreen ratio={state.quizz.ratio} center classList={css({ padding: 5, overflow: "hidden" })}>
         {state.progress.step === "explanation"
           ? <ContentDisplay content={currentQuestion.explanation ?? null} />
           : state.progress.step === "timesup"
           ? <Typography classList={css({ textAlign: "center" })} fontSize="[4rem]" fontWeight="bold">🥁 🥁 🥁 🥁 🥁</Typography>
           : <ContentDisplay content={currentQuestion.question} />}
       </RatioScreen>
-      <RatioScreen ratio={state.quizz.ratio}>
+      <RatioScreen ratio={state.quizz.ratio} classList={css({ overflow: "hidden" })}>
         <QuestionOptions
           options={currentQuestion.options}
           layout={currentQuestion.layout}

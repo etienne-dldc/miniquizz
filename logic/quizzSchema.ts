@@ -11,6 +11,7 @@ export const quizzContentBlockSchema = v.variant("type", [
     type: v.literal("code"),
     code: v.union([v.string(), v.array(v.string())]),
     size: v.optional(v.number(), 2),
+    wrapSize: v.optional(v.number()),
   }),
   v.object({
     type: v.literal("image"),

@@ -16,7 +16,7 @@ const rootClassName = css({
   borderWidth: "1px",
   borderStyle: "solid",
   borderRadius: 2,
-  padding: 3,
+  padding: 2,
   transition: "border-color 120ms ease-out, background-color 120ms ease-out",
   background: itemBg,
   borderColor: "white/10",
@@ -30,6 +30,7 @@ const rootClassName = css({
       borderWidth: "3px",
       borderStyle: "solid",
       borderColor: borderColor,
+      pointerEvents: "none",
     },
   },
 });
