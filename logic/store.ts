@@ -2,27 +2,27 @@ import { createSubscription, type SubscribeMethod } from "@dldc/pubsub";
 import { resolve } from "@std/path";
 import * as v from "@valibot/valibot";
 import type { AdminAction } from "./adminActionSchema.ts";
-import { type Quizz, quizzSchema, type StepQuestion, type StepSlide } from "./quizzSchema.ts";
+import { type Doc, docSchema, type StepQuestion, type StepSlide } from "./docSchema.ts";
 import type { Session } from "./sessions.ts";
 import type { UserAction } from "./userActionSchema.ts";
 import { restore, sanitize } from "./zenjson.ts";
 
-export type QuizzAction = {
+export type AppAction = {
   session: Session;
   action: AdminAction | UserAction;
 };
 
-export type QuizzEvent =
+export type AppEvent =
   | { type: "All" }
   | { type: "User"; sessionId: string }
   | { type: "Admin" };
 
-export type QuizzSessionState = {
+export type AppSessionState = {
   isAdmin?: boolean;
   votes: Map<number, number>;
 };
 
-export type QuizzStateProgress = {
+export type AppStateProgress = {
   index: number;
   kind: "question";
   step: "question" | "timesup" | "answer" | "explanation";
@@ -35,11 +35,11 @@ export type CurrentStep =
   | { type: "question"; index: number; step: "question" | "timesup" | "answer" | "explanation"; question: StepQuestion }
   | { type: "slide"; index: number; slide: StepSlide };
 
-export interface QuizzState {
+export interface AppState {
   state: "running" | "idle";
-  quizz: Quizz;
+  doc: Doc;
   progress: number;
-  sessions: Map<string, QuizzSessionState>;
+  sessions: Map<string, AppSessionState>;
 }
 
 export interface CurrentSessionState {
@@ -52,39 +52,39 @@ export interface CurrentQuestionStats {
   totalVotes: number;
 }
 
-export interface QuizzStore {
-  subscribe: SubscribeMethod<QuizzEvent>;
-  dispatch: (action: QuizzAction) => void;
-  getState: () => QuizzState;
-  getQuizz: () => Quizz;
+export interface AppStore {
+  subscribe: SubscribeMethod<AppEvent>;
+  dispatch: (action: AppAction) => void;
+  getState: () => AppState;
+  getDoc: () => Doc;
   getCurrentStep: () => CurrentStep;
   getCurrentSessionState: (sessionId: string) => CurrentSessionState | null;
   getCurrentQuestionStats: () => CurrentQuestionStats;
 }
 
-export async function createQuizzStore(
+export async function createAppStore(
   dataPath: string,
   storageKey: string,
-): Promise<QuizzStore> {
+): Promise<AppStore> {
   await ensureDataFolder(dataPath);
-  const quizz = await readDataFile(dataPath);
-  const sub = createSubscription<QuizzEvent>();
-  let state: QuizzState = loadState(storageKey, quizz);
-  const allSteps = computeAllSteps(state.quizz);
+  const doc = await readDataFile(dataPath);
+  const sub = createSubscription<AppEvent>();
+  let state: AppState = loadState(storageKey, doc);
+  const allSteps = computeAllSteps(state.doc);
 
   return {
     subscribe: sub.subscribe,
     dispatch,
     getState: () => state,
-    getQuizz: () => state.quizz,
+    getDoc: () => state.doc,
     getCurrentStep,
     getCurrentSessionState,
     getCurrentQuestionStats,
   };
 
-  function dispatch({ action, session }: QuizzAction) {
+  function dispatch({ action, session }: AppAction) {
     if (action.type === "Reset") {
-      state = createInitialQuizzState(state.quizz);
+      state = createInitialAppState(state.doc);
       sub.emit({ type: "All" });
       saveState(state, storageKey);
       return;
@@ -154,7 +154,7 @@ export async function createQuizzStore(
 
   function getCurrentStep(): CurrentStep {
     const stepState = allSteps[state.progress];
-    const step = state.quizz.steps[stepState.index];
+    const step = state.doc.steps[stepState.index];
 
     if (stepState.kind === "question") {
       if (step.type !== "question") {
@@ -203,34 +203,34 @@ export async function createQuizzStore(
   }
 }
 
-function saveState(state: QuizzState, storageKey: string) {
+function saveState(state: AppState, storageKey: string) {
   try {
     localStorage.setItem(storageKey, JSON.stringify(sanitize(state)));
   } catch (err) {
-    console.error("Failed to save quizz state to localStorage", err);
+    console.error("Failed to save app state to localStorage", err);
   }
 }
 
-function createInitialQuizzState(quizz: Quizz): QuizzState {
+function createInitialAppState(doc: Doc): AppState {
   return {
     state: "idle",
-    quizz,
+    doc: doc,
     progress: 0,
     sessions: new Map(),
   };
 }
 
-function loadState(storageKey: string, quizz: Quizz): QuizzState {
+function loadState(storageKey: string, doc: Doc): AppState {
   const data = localStorage.getItem(storageKey);
   if (!data) {
-    return createInitialQuizzState(quizz);
+    return createInitialAppState(doc);
   }
   try {
-    const restored = restore(JSON.parse(data)) as QuizzState;
-    return { ...restored, quizz };
+    const restored = restore(JSON.parse(data)) as AppState;
+    return { ...restored, doc: doc };
   } catch (err) {
-    console.error("Failed to parse quizz state from localStorage", err);
-    return createInitialQuizzState(quizz);
+    console.error("Failed to parse app state from localStorage", err);
+    return createInitialAppState(doc);
   }
 }
 
@@ -250,22 +250,22 @@ async function ensureDataFolder(dataPath: string) {
   }
 }
 
-async function readDataFile(dataPath: string): Promise<Quizz> {
+async function readDataFile(dataPath: string): Promise<Doc> {
   const dataFilePath = resolve(dataPath, "data.json");
   try {
     const content = await Deno.readTextFile(dataFilePath);
     const dataUnkown = JSON.parse(content);
-    return v.parse(quizzSchema, dataUnkown);
+    return v.parse(docSchema, dataUnkown);
   } catch (err) {
-    throw new Error(`Failed to read or parse quizz file at ${dataFilePath}`, {
+    throw new Error(`Failed to read or parse app file at ${dataFilePath}`, {
       cause: err,
     });
   }
 }
 
-function computeAllSteps(quizz: Quizz): QuizzStateProgress[] {
-  const steps: QuizzStateProgress[] = [];
-  quizz.steps.forEach((step, index) => {
+function computeAllSteps(doc: Doc): AppStateProgress[] {
+  const steps: AppStateProgress[] = [];
+  doc.steps.forEach((step, index) => {
     if (step.type === "question") {
       steps.push({ index, kind: "question", step: "question" });
       steps.push({ index, kind: "question", step: "timesup" });

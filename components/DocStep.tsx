@@ -1,19 +1,19 @@
 import { Box, css, Typography } from "@dldc/hono-ui";
-import type { QuizzStore } from "../logic/quizzStore.ts";
 import type { Session } from "../logic/sessions.ts";
+import type { AppStore } from "../logic/store.ts";
 import { ContentDisplay } from "./ContentDisplay.tsx";
 import { QuestionOptions } from "./QuestionOptions.tsx";
 import { RatioScreen } from "./RatioScreen.tsx";
 
-interface LiveQuizzContentProps {
-  store: QuizzStore;
+interface DocStepProps {
+  store: AppStore;
   session: Session;
 }
 
-export function LiveQuizzContent({ store, session }: LiveQuizzContentProps) {
+export function DocStep({ store, session }: DocStepProps) {
   const currentSessionState = store.getCurrentSessionState(session.id);
   const currentStep = store.getCurrentStep();
-  const quizz = store.getQuizz();
+  const quizz = store.getDoc();
 
   if (currentStep.type === "question") {
     return (

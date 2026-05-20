@@ -32,7 +32,7 @@ export const AdminMenu: FC = () => {
       </Button>
 
       <div id="admin-menu" popover="auto" class={popoverStyle}>
-        <Paper flexDirection="column" gap={2} padding={3} classList={css({ minWidth: 100 })}>
+        <Paper flexDirection="column" gap={2} padding={4} classList={css({ minWidth: 100, borderRadius: 6 })}>
           <Button {...adminActionProps({ type: "Reset" })} hx-confirm="Reset the quiz? This action cannot be undone.">
             Reset Quiz
           </Button>

@@ -44,7 +44,7 @@ export const stepSchema = v.variant("type", [
   }),
 ]);
 
-export const quizzSchema = v.object({
+export const docSchema = v.object({
   name: v.string(),
   description: v.string(),
   steps: v.array(stepSchema),
@@ -59,4 +59,4 @@ export type Step = v.InferOutput<typeof stepSchema>;
 export type StepQuestion = Extract<Step, { type: "question" }>;
 export type StepSlide = Extract<Step, { type: "slide" }>;
 export type StepQuestionLayout = v.InferOutput<typeof stepQuestionLayoutSchema>;
-export type Quizz = v.InferOutput<typeof quizzSchema>;
+export type Doc = v.InferOutput<typeof docSchema>;

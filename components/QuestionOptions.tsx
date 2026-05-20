@@ -1,6 +1,6 @@
 import { Box, css, type CssObjProperties } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
-import type { StepQuestionLayout, StepQuestionOption } from "../logic/quizzSchema.ts";
+import type { StepQuestionLayout, StepQuestionOption } from "../logic/docSchema.ts";
 import { OptionItem, type OptionItemState } from "./OptionItem.tsx";
 
 interface QuestionOptionsProps {

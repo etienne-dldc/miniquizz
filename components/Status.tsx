@@ -1,14 +1,14 @@
 import { css, Icon, Stack, Typography } from "@dldc/hono-ui";
 import { MonitorPlay, User } from "lucide-static";
-import type { QuizzStore } from "../../logic/quizzStore.ts";
+import type { AppStore } from "../logic/store.ts";
 
 interface StatusProps {
-  store: QuizzStore;
+  store: AppStore;
 }
 
 export function Status({ store }: StatusProps) {
   const currentStep = store.getCurrentStep();
-  const quizz = store.getQuizz();
+  const quizz = store.getDoc();
   const { totalUsers, totalVotes } = store.getCurrentQuestionStats();
 
   return (

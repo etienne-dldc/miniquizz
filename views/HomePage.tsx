@@ -1,21 +1,21 @@
 import { Box, css } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
 import { Layout } from "../components/Layout.tsx";
-import { UserQuizz } from "../components/UserQuizz.tsx";
-import type { QuizzStore } from "../logic/quizzStore.ts";
+import { UserLive } from "../components/UserLive.tsx";
 import type { Session } from "../logic/sessions.ts";
+import type { AppStore } from "../logic/store.ts";
 
 type HomePageProps = {
   session: Session;
-  store: QuizzStore;
+  store: AppStore;
 };
 
 export const HomePage: FC<HomePageProps> = ({ session, store }) => {
-  const quizz = store.getQuizz();
+  const doc = store.getDoc();
   return (
-    <Layout title={quizz.name} classList={css({ display: "grid", gridTemplateRows: "1fr" })} showLogoutButton>
+    <Layout title={doc.name} classList={css({ display: "grid", gridTemplateRows: "1fr" })} showLogoutButton>
       <Box hx-sse:connect="/stream" classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
-        <UserQuizz session={session} store={store} />
+        <UserLive session={session} store={store} />
       </Box>
     </Layout>
   );

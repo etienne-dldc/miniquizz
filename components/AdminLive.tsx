@@ -1,17 +1,17 @@
 import { Box, Button, css, Icon, Stack } from "@dldc/hono-ui";
 import { Play } from "lucide-static";
 import { adminActionProps } from "../logic/actionProps.ts";
-import type { QuizzStore } from "../logic/quizzStore.ts";
 import type { Session } from "../logic/sessions.ts";
-import { Status } from "./AdminQuizz/Status.tsx";
-import { LiveQuizzContent } from "./LiveQuizzContent.tsx";
+import type { AppStore } from "../logic/store.ts";
+import { DocStep } from "./DocStep.tsx";
+import { Status } from "./Status.tsx";
 
-interface AdminQuizzProps {
-  store: QuizzStore;
+interface AdminLiveProps {
+  store: AppStore;
   session: Session;
 }
 
-export const AdminQuizz = ({ store, session }: AdminQuizzProps) => {
+export const AdminLive = ({ store, session }: AdminLiveProps) => {
   const state = store.getState();
 
   if (state.state === "idle") {
@@ -33,7 +33,7 @@ export const AdminQuizz = ({ store, session }: AdminQuizzProps) => {
   state.state satisfies "running";
   return (
     <Box classList={css({ display: "grid", gridTemplateRows: "1fr auto" })}>
-      <LiveQuizzContent store={store} session={session} />
+      <DocStep store={store} session={session} />
       <Status store={store} />
     </Box>
   );

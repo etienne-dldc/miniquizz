@@ -5,14 +5,14 @@ import { deleteCookie, setCookie } from "hono/cookie";
 import { serveStatic } from "hono/deno";
 import { streamSSE } from "hono/streaming";
 import console from "node:console";
-import { AdminQuizz } from "./components/AdminQuizz.tsx";
-import { UserQuizz } from "./components/UserQuizz.tsx";
+import { AdminLive } from "./components/AdminLive.tsx";
+import { UserLive } from "./components/UserLive.tsx";
 import denoJson from "./deno.json" with { type: "json" };
 import { adminActionSchema } from "./logic/adminActionSchema.ts";
 import { SESSION_COOKIE_NAME, SESSIONS_STORAGE_KEY, STATE_STORAGE_KEY } from "./logic/constants.ts";
 import { appEnv } from "./logic/env.ts";
-import { createQuizzStore } from "./logic/quizzStore.ts";
 import { createSessions } from "./logic/sessions.ts";
+import { createAppStore } from "./logic/store.ts";
 import { userActionSchema } from "./logic/userActionSchema.ts";
 import { cacheControlMiddleware } from "./middlewares/cacheControlMiddleware.ts";
 import { otelRouteMiddleware } from "./middlewares/otelRouteMiddleware.ts";
@@ -30,7 +30,7 @@ console.info(
   `OpenTelemetry ${appEnv.otel.denoEnabled ? "enabled" : "disabled"}`,
 );
 
-const store = await createQuizzStore(appEnv.dataFolderPath, STATE_STORAGE_KEY);
+const store = await createAppStore(appEnv.dataFolderPath, STATE_STORAGE_KEY);
 const sessions = createSessions(SESSIONS_STORAGE_KEY);
 
 const app = new Hono();
@@ -79,7 +79,7 @@ app.get("/", async (c) => {
   const session = c.get("session");
   if (!session) {
     return await c.html(
-      <LoginPage title={store.getQuizz().name} />,
+      <LoginPage title={store.getDoc().name} />,
     );
   }
 
@@ -91,7 +91,7 @@ app.get("/", async (c) => {
 app.get("/admin", (c) => {
   const session = c.get("session");
   if (!session) {
-    return c.html(<AdminLoginPage title={store.getQuizz().name} />);
+    return c.html(<AdminLoginPage title={store.getDoc().name} />);
   }
 
   if (!session.isAdmin) {
@@ -120,7 +120,7 @@ app.post(
 
     const { password } = c.req.valid("form");
     if (password !== appEnv.adminPassword) {
-      return c.html(<AdminLoginPage invalidPassword title={store.getState().quizz.name} />, 401);
+      return c.html(<AdminLoginPage invalidPassword title={store.getState().doc.name} />, 401);
     }
 
     const adminSession = sessions.create("Admin", true);
@@ -177,7 +177,7 @@ app.get("/stream", (c) => {
   }
   return streamSSE(c, async (stream) => {
     await stream.writeSSE({
-      data: <UserQuizz session={session} store={store} />,
+      data: <UserLive session={session} store={store} />,
     });
 
     let queue = Promise.resolve();
@@ -188,7 +188,7 @@ app.get("/stream", (c) => {
       ) {
         queue = queue.then(async () => {
           await stream.writeSSE({
-            data: <UserQuizz session={session} store={store} />,
+            data: <UserLive session={session} store={store} />,
           });
         });
       }
@@ -209,14 +209,14 @@ app.get("/admin/stream", (c) => {
     return c.text("Unauthorized", 401);
   }
   return streamSSE(c, async (stream) => {
-    await stream.writeSSE({ data: <AdminQuizz store={store} session={session} /> });
+    await stream.writeSSE({ data: <AdminLive store={store} session={session} /> });
 
     let queue = Promise.resolve();
     const unsub = store.subscribe((event) => {
       if (event.type === "All" || event.type === "Admin" || (event.type === "User" && event.sessionId === session.id)) {
         queue = queue.then(async () => {
           await stream.writeSSE({
-            data: <AdminQuizz store={store} session={session} />,
+            data: <AdminLive store={store} session={session} />,
           });
         });
       }

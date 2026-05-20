@@ -1,16 +1,16 @@
 import { Box, css, Icon, Stack, Typography } from "@dldc/hono-ui";
 import { Timer } from "lucide-static";
-import type { QuizzStore } from "../logic/quizzStore.ts";
 import type { Session } from "../logic/sessions.ts";
-import { LiveQuizzContent } from "./LiveQuizzContent.tsx";
+import type { AppStore } from "../logic/store.ts";
+import { DocStep } from "./DocStep.tsx";
 
-interface UserQuizzProps {
-  store: QuizzStore;
+interface UserLiveProps {
+  store: AppStore;
   session: Session;
 }
 
-export const UserQuizz = (
-  { session, store }: UserQuizzProps,
+export const UserLive = (
+  { session, store }: UserLiveProps,
 ) => {
   const state = store.getState();
   if (state.state === "idle") {
@@ -29,7 +29,7 @@ export const UserQuizz = (
 
   return (
     <Box classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
-      <LiveQuizzContent store={store} session={session} />
+      <DocStep store={store} session={session} />
     </Box>
   );
 };

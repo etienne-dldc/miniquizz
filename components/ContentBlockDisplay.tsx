@@ -1,9 +1,9 @@
 import { Box, css, Typography } from "@dldc/hono-ui";
 import { Fragment } from "hono/jsx";
 import { codeToHtml } from "shiki";
-import type { ContentBlock } from "../../logic/quizzSchema.ts";
+import type { ContentBlock } from "../logic/docSchema.ts";
 
-interface QuizzContentBlockDisplayProps {
+interface ContentBlockDisplayProps {
   block: ContentBlock;
 }
 
@@ -14,8 +14,8 @@ const codeClass = css({
   color: "neutral-400",
 });
 
-export const QuizzContentBlockDisplay = async (
-  { block }: QuizzContentBlockDisplayProps,
+export const ContentBlockDisplay = async (
+  { block }: ContentBlockDisplayProps,
 ) => {
   if (block.type === "text") {
     const textContent = Array.isArray(block.text) ? block.text.join("\n") : block.text;
