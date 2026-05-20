@@ -1,10 +1,10 @@
 import { Box, css, Typography } from "@dldc/hono-ui";
 import { Fragment } from "hono/jsx";
 import { codeToHtml } from "shiki";
-import type { QuizzContentBlock } from "../../logic/quizzSchema.ts";
+import type { ContentBlock } from "../../logic/quizzSchema.ts";
 
 interface QuizzContentBlockDisplayProps {
-  block: QuizzContentBlock;
+  block: ContentBlock;
 }
 
 const codeClass = css({

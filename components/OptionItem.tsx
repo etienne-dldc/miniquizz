@@ -1,7 +1,7 @@
 import { css, cssVar, Stack, tokens, Typography } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
 import { userActionProps } from "../logic/actionProps.ts";
-import type { QuizzOption } from "../logic/quizzSchema.ts";
+import type { StepQuestionOption } from "../logic/quizzSchema.ts";
 import { ContentDisplay } from "./ContentDisplay.tsx";
 
 export type OptionItemState = "default" | "selected" | "correct" | "wrong" | "valid" | "invalid";
@@ -111,7 +111,7 @@ const stateClassNames: Record<OptionItemState, Promise<string>> = {
 
 interface OptionItemProps {
   index: number;
-  option: QuizzOption;
+  option: StepQuestionOption;
   label: string;
   state: OptionItemState;
 }

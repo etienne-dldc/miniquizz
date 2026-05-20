@@ -2,7 +2,7 @@ import { createSubscription, type SubscribeMethod } from "@dldc/pubsub";
 import { resolve } from "@std/path";
 import * as v from "@valibot/valibot";
 import type { AdminAction } from "./adminActionSchema.ts";
-import { type Quizz, quizzSchema } from "./quizzSchema.ts";
+import { type Quizz, quizzSchema, type StepQuestion, type StepSlide } from "./quizzSchema.ts";
 import type { Session } from "./sessions.ts";
 import type { UserAction } from "./userActionSchema.ts";
 import { restore, sanitize } from "./zenjson.ts";
@@ -22,22 +22,44 @@ export type QuizzSessionState = {
   votes: Map<number, number>;
 };
 
-export interface QuizzStateProgress {
-  questionIndex: number;
+export type QuizzStateProgress = {
+  index: number;
+  kind: "question";
   step: "question" | "timesup" | "answer" | "explanation";
-}
+} | {
+  index: number;
+  kind: "slide";
+};
+
+export type CurrentStep =
+  | { type: "question"; index: number; step: "question" | "timesup" | "answer" | "explanation"; question: StepQuestion }
+  | { type: "slide"; index: number; slide: StepSlide };
 
 export interface QuizzState {
   state: "running" | "idle";
   quizz: Quizz;
-  progress: QuizzStateProgress;
+  progress: number;
   sessions: Map<string, QuizzSessionState>;
+}
+
+export interface CurrentSessionState {
+  isAdmin?: boolean;
+  vote: number | null;
+}
+
+export interface CurrentQuestionStats {
+  totalUsers: number;
+  totalVotes: number;
 }
 
 export interface QuizzStore {
   subscribe: SubscribeMethod<QuizzEvent>;
   dispatch: (action: QuizzAction) => void;
   getState: () => QuizzState;
+  getQuizz: () => Quizz;
+  getCurrentStep: () => CurrentStep;
+  getCurrentSessionState: (sessionId: string) => CurrentSessionState | null;
+  getCurrentQuestionStats: () => CurrentQuestionStats;
 }
 
 export async function createQuizzStore(
@@ -45,9 +67,20 @@ export async function createQuizzStore(
   storageKey: string,
 ): Promise<QuizzStore> {
   await ensureDataFolder(dataPath);
-  const quizz = await readQuizzFile(dataPath);
+  const quizz = await readDataFile(dataPath);
   const sub = createSubscription<QuizzEvent>();
   let state: QuizzState = loadState(storageKey, quizz);
+  const allSteps = computeAllSteps(state.quizz);
+
+  return {
+    subscribe: sub.subscribe,
+    dispatch,
+    getState: () => state,
+    getQuizz: () => state.quizz,
+    getCurrentStep,
+    getCurrentSessionState,
+    getCurrentQuestionStats,
+  };
 
   function dispatch({ action, session }: QuizzAction) {
     if (action.type === "Reset") {
@@ -71,11 +104,10 @@ export async function createQuizzStore(
       if (state.state !== "running") {
         return;
       }
-      const nextProgress = computeNextProgress(state.progress, state.quizz);
-      if (nextProgress === state.progress) {
+      if (state.progress >= allSteps.length - 1) {
         return;
       }
-      state.progress = nextProgress;
+      state.progress += 1;
       saveState(state, storageKey);
       sub.emit({ type: "All" });
       return;
@@ -85,25 +117,24 @@ export async function createQuizzStore(
       if (state.state !== "running") {
         return;
       }
-      const prevProgress = computePrevProgress(state.progress, state.quizz);
-      if (prevProgress === state.progress) {
+      if (state.progress <= 0) {
         return;
       }
-      state.progress = prevProgress;
+      state.progress -= 1;
       saveState(state, storageKey);
       sub.emit({ type: "All" });
       return;
     }
 
     if (action.type === "Vote") {
-      if (state.state !== "running") {
+      const step = getCurrentStep();
+      if (step.type !== "question") {
         return;
       }
-      // make sure optionIndex is valid
-      if (action.optionIndex < 0 || action.optionIndex >= state.quizz.questions[state.progress.questionIndex].options.length) {
+      if (step.step !== "question" && step.step !== "timesup") {
         return;
       }
-      if (state.progress.step !== "question" && state.progress.step !== "timesup") {
+      if (action.optionIndex < 0 || action.optionIndex >= step.question.options.length) {
         return;
       }
       let sessionState = state.sessions.get(session.id);
@@ -111,7 +142,7 @@ export async function createQuizzStore(
         sessionState = { votes: new Map(), isAdmin: session.isAdmin };
         state.sessions.set(session.id, sessionState);
       }
-      sessionState.votes.set(state.progress.questionIndex, action.optionIndex);
+      sessionState.votes.set(step.index, action.optionIndex);
       saveState(state, storageKey);
       sub.emit({ type: "User", sessionId: session.id });
       sub.emit({ type: "Admin" });
@@ -121,11 +152,55 @@ export async function createQuizzStore(
     action satisfies never;
   }
 
-  return {
-    subscribe: sub.subscribe,
-    dispatch,
-    getState: () => state,
-  };
+  function getCurrentStep(): CurrentStep {
+    const stepState = allSteps[state.progress];
+    const step = state.quizz.steps[stepState.index];
+
+    if (stepState.kind === "question") {
+      if (step.type !== "question") {
+        throw new Error(`Invalid state: expected question step at index ${stepState.index}`);
+      }
+      return { type: "question", index: stepState.index, question: step, step: stepState.step };
+    }
+    if (stepState.kind === "slide") {
+      if (step.type !== "slide") {
+        throw new Error(`Invalid state: expected slide step at index ${stepState.index}`);
+      }
+      return { type: "slide", index: stepState.index, slide: step };
+    }
+    stepState satisfies never;
+    throw new Error(`Invalid state: unknown step kind`);
+  }
+
+  function getCurrentSessionState(sessionId: string): CurrentSessionState | null {
+    const sessionState = state.sessions.get(sessionId);
+    if (!sessionState) {
+      return null;
+    }
+    return {
+      isAdmin: sessionState.isAdmin,
+      vote: sessionState.votes.get(state.progress) ?? null,
+    };
+  }
+
+  function getCurrentQuestionStats(): CurrentQuestionStats {
+    const totalUsers = Array.from(state.sessions.values()).filter((sessionState) => !sessionState.isAdmin).length;
+    const currentStep = getCurrentStep();
+    if (currentStep.type !== "question") {
+      return { totalUsers, totalVotes: 0 };
+    }
+    const totalVotes = Array.from(state.sessions.values()).reduce((acc, sessionState) => {
+      if (sessionState.isAdmin) {
+        return acc;
+      }
+      const vote = sessionState.votes.get(currentStep.index);
+      if (vote !== undefined) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
+    return { totalUsers, totalVotes };
+  }
 }
 
 function saveState(state: QuizzState, storageKey: string) {
@@ -140,7 +215,7 @@ function createInitialQuizzState(quizz: Quizz): QuizzState {
   return {
     state: "idle",
     quizz,
-    progress: { questionIndex: 0, step: "question" },
+    progress: 0,
     sessions: new Map(),
   };
 }
@@ -175,55 +250,36 @@ async function ensureDataFolder(dataPath: string) {
   }
 }
 
-async function readQuizzFile(dataPath: string): Promise<Quizz> {
-  const quizFillPath = resolve(dataPath, "quizz.json");
+async function readDataFile(dataPath: string): Promise<Quizz> {
+  const dataFilePath = resolve(dataPath, "data.json");
   try {
-    const content = await Deno.readTextFile(quizFillPath);
+    const content = await Deno.readTextFile(dataFilePath);
     const dataUnkown = JSON.parse(content);
     return v.parse(quizzSchema, dataUnkown);
   } catch (err) {
-    throw new Error(`Failed to read or parse quizz file at ${quizFillPath}`, {
+    throw new Error(`Failed to read or parse quizz file at ${dataFilePath}`, {
       cause: err,
     });
   }
 }
 
-function computeNextProgress(progress: QuizzStateProgress, quizz: Quizz): QuizzStateProgress {
-  if (progress.step === "question") {
-    return { ...progress, step: "timesup" };
-  }
-  if (progress.step === "timesup") {
-    return { ...progress, step: "answer" };
-  }
-  const currentQuestion = quizz.questions[progress.questionIndex];
-  if (progress.step === "answer" && currentQuestion.explanation) {
-    return { ...progress, step: "explanation" };
-  }
-  const nextIndex = progress.questionIndex + 1;
-  if (nextIndex >= quizz.questions.length) {
-    return progress;
-  }
-  return { questionIndex: nextIndex, step: "question" };
-}
-
-function computePrevProgress(progress: QuizzStateProgress, quizz: Quizz): QuizzStateProgress {
-  if (progress.step === "explanation") {
-    return { ...progress, step: "answer" };
-  }
-  if (progress.step === "answer") {
-    return { ...progress, step: "timesup" };
-  }
-  if (progress.step === "timesup") {
-    return { ...progress, step: "question" };
-  }
-  const prevIndex = progress.questionIndex - 1;
-  if (prevIndex < 0) {
-    return progress;
-  }
-  const prevQuestion = quizz.questions[prevIndex];
-  const prevHasExplanation = !!prevQuestion.explanation;
-  if (prevHasExplanation) {
-    return { questionIndex: prevIndex, step: "explanation" };
-  }
-  return { questionIndex: prevIndex, step: "answer" };
+function computeAllSteps(quizz: Quizz): QuizzStateProgress[] {
+  const steps: QuizzStateProgress[] = [];
+  quizz.steps.forEach((step, index) => {
+    if (step.type === "question") {
+      steps.push({ index, kind: "question", step: "question" });
+      steps.push({ index, kind: "question", step: "timesup" });
+      steps.push({ index, kind: "question", step: "answer" });
+      if (step.explanation) {
+        steps.push({ index, kind: "question", step: "explanation" });
+      }
+      return;
+    }
+    if (step.type === "slide") {
+      steps.push({ index, kind: "slide" });
+      return;
+    }
+    step satisfies never;
+  });
+  return steps;
 }

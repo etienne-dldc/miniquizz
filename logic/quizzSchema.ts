@@ -1,6 +1,6 @@
 import * as v from "@valibot/valibot";
 
-export const quizzContentBlockSchema = v.variant("type", [
+export const contentBlockSchema = v.variant("type", [
   v.object({
     type: v.literal("text"),
     text: v.union([v.string(), v.array(v.string())]),
@@ -21,33 +21,42 @@ export const quizzContentBlockSchema = v.variant("type", [
   }),
 ]);
 
-export const quizzContentSchema = v.array(quizzContentBlockSchema);
+export const contentBlocksSchema = v.array(contentBlockSchema);
 
-export const quizzOptionSchema = v.object({
-  content: quizzContentSchema,
+export const stepQuestionOptionSchema = v.object({
+  content: contentBlocksSchema,
   isCorrect: v.boolean(),
 });
 
-export const quizzQuestionLayoutSchema = v.picklist(["auto", "horizontal", "vertical"]);
+export const stepQuestionLayoutSchema = v.picklist(["auto", "horizontal", "vertical"]);
 
-export const quizzQuestionSchema = v.object({
-  question: quizzContentSchema,
-  options: v.array(quizzOptionSchema),
-  explanation: v.optional(quizzContentSchema),
-  layout: v.optional(quizzQuestionLayoutSchema),
-});
+export const stepSchema = v.variant("type", [
+  v.object({
+    type: v.literal("question"),
+    question: contentBlocksSchema,
+    options: v.array(stepQuestionOptionSchema),
+    explanation: v.optional(contentBlocksSchema),
+    layout: v.optional(stepQuestionLayoutSchema),
+  }),
+  v.object({
+    type: v.literal("slide"),
+    content: contentBlocksSchema,
+  }),
+]);
 
 export const quizzSchema = v.object({
   name: v.string(),
   description: v.string(),
-  questions: v.array(quizzQuestionSchema),
+  steps: v.array(stepSchema),
   // ration of the screen to display questions
   ratio: v.number(),
 });
 
-export type QuizzContentBlock = v.InferOutput<typeof quizzContentBlockSchema>;
-export type QuizzContent = v.InferOutput<typeof quizzContentSchema>;
-export type QuizzOption = v.InferOutput<typeof quizzOptionSchema>;
-export type QuizzQuestion = v.InferOutput<typeof quizzQuestionSchema>;
-export type QuizzQuestionLayout = v.InferOutput<typeof quizzQuestionLayoutSchema>;
+export type ContentBlock = v.InferOutput<typeof contentBlockSchema>;
+export type ContentBlocks = v.InferOutput<typeof contentBlocksSchema>;
+export type StepQuestionOption = v.InferOutput<typeof stepQuestionOptionSchema>;
+export type Step = v.InferOutput<typeof stepSchema>;
+export type StepQuestion = Extract<Step, { type: "question" }>;
+export type StepSlide = Extract<Step, { type: "slide" }>;
+export type StepQuestionLayout = v.InferOutput<typeof stepQuestionLayoutSchema>;
 export type Quizz = v.InferOutput<typeof quizzSchema>;

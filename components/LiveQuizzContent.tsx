@@ -1,44 +1,57 @@
 import { Box, css, Typography } from "@dldc/hono-ui";
-import type { QuizzState } from "../logic/quizzStore.ts";
+import type { QuizzStore } from "../logic/quizzStore.ts";
 import type { Session } from "../logic/sessions.ts";
 import { ContentDisplay } from "./ContentDisplay.tsx";
 import { QuestionOptions } from "./QuestionOptions.tsx";
 import { RatioScreen } from "./RatioScreen.tsx";
 
 interface LiveQuizzContentProps {
-  state: QuizzState;
+  store: QuizzStore;
   session: Session;
 }
 
-export function LiveQuizzContent({ state, session }: LiveQuizzContentProps) {
-  const currentQuestion = state.quizz.questions[state.progress.questionIndex];
-  const sessionState = state.sessions.get(session.id);
-  const currentVote = sessionState?.votes.get(state.progress.questionIndex);
+export function LiveQuizzContent({ store, session }: LiveQuizzContentProps) {
+  const currentSessionState = store.getCurrentSessionState(session.id);
+  const currentStep = store.getCurrentStep();
+  const quizz = store.getQuizz();
 
-  return (
-    <Box
-      classList={css({
-        display: "grid",
-        gap: 4,
-        gridTemplateRows: "1fr 1fr",
-        media: { "@media (min-aspect-ratio: 3/2)": { gridTemplateRows: "auto", gridTemplateColumns: "1fr 1fr" } },
-      })}
-    >
-      <RatioScreen ratio={state.quizz.ratio} center classList={css({ padding: 5, overflow: "hidden" })}>
-        {state.progress.step === "explanation"
-          ? <ContentDisplay content={currentQuestion.explanation ?? null} />
-          : state.progress.step === "timesup"
-          ? <Typography classList={css({ textAlign: "center" })} fontSize="[4rem]" fontWeight="bold">🥁 🥁 🥁 🥁 🥁</Typography>
-          : <ContentDisplay content={currentQuestion.question} />}
+  if (currentStep.type === "question") {
+    return (
+      <Box
+        classList={css({
+          display: "grid",
+          gap: 4,
+          gridTemplateRows: "1fr 1fr",
+          media: { "@media (min-aspect-ratio: 3/2)": { gridTemplateRows: "auto", gridTemplateColumns: "1fr 1fr" } },
+        })}
+      >
+        <RatioScreen ratio={quizz.ratio} center classList={css({ padding: 5, overflow: "hidden" })}>
+          {currentStep.step === "explanation"
+            ? <ContentDisplay content={currentStep.question.explanation ?? null} />
+            : currentStep.step === "timesup"
+            ? <Typography classList={css({ textAlign: "center" })} fontSize="[4rem]" fontWeight="bold">🥁 🥁 🥁 🥁 🥁</Typography>
+            : <ContentDisplay content={currentStep.question.question} />}
+        </RatioScreen>
+        <RatioScreen ratio={quizz.ratio} classList={css({ overflow: "hidden" })}>
+          <QuestionOptions
+            options={currentStep.question.options}
+            layout={currentStep.question.layout}
+            selectedOptionIndex={currentSessionState?.vote}
+            showAnswer={currentStep.step === "answer" || currentStep.step === "explanation"}
+          />
+        </RatioScreen>
+      </Box>
+    );
+  }
+
+  if (currentStep.type === "slide") {
+    return (
+      <RatioScreen ratio={quizz.ratio} center classList={css({ padding: 5, overflow: "hidden" })}>
+        <ContentDisplay content={currentStep.slide.content} />
       </RatioScreen>
-      <RatioScreen ratio={state.quizz.ratio} classList={css({ overflow: "hidden" })}>
-        <QuestionOptions
-          options={currentQuestion.options}
-          layout={currentQuestion.layout}
-          selectedOptionIndex={currentVote}
-          showAnswer={state.progress.step === "answer" || state.progress.step === "explanation"}
-        />
-      </RatioScreen>
-    </Box>
-  );
+    );
+  }
+
+  currentStep satisfies never;
+  return null;
 }

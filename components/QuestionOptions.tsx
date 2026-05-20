@@ -1,11 +1,11 @@
 import { Box, css, type CssObjProperties } from "@dldc/hono-ui";
 import type { FC } from "hono/jsx";
-import type { QuizzOption, QuizzQuestionLayout } from "../logic/quizzSchema.ts";
+import type { StepQuestionLayout, StepQuestionOption } from "../logic/quizzSchema.ts";
 import { OptionItem, type OptionItemState } from "./OptionItem.tsx";
 
 interface QuestionOptionsProps {
-  options: QuizzOption[];
-  layout: QuizzQuestionLayout | undefined;
+  options: StepQuestionOption[];
+  layout: StepQuestionLayout | undefined;
   selectedOptionIndex?: number | null;
   showAnswer?: boolean;
 }
@@ -35,7 +35,7 @@ export const QuestionOptions: FC<QuestionOptionsProps> = ({ options, layout, sel
   );
 };
 
-function getOptionLayout(optionsCount: number, layout: QuizzQuestionLayout | undefined): CssObjProperties {
+function getOptionLayout(optionsCount: number, layout: StepQuestionLayout | undefined): CssObjProperties {
   if (layout === "horizontal") {
     return { gridTemplateColumns: "auto", gridTemplateRows: `repeat(${optionsCount}, 1fr)` };
   }
@@ -56,7 +56,7 @@ function getOptionLayout(optionsCount: number, layout: QuizzQuestionLayout | und
 
 function getOptionItemState(
   index: number,
-  option: QuizzOption,
+  option: StepQuestionOption,
   selectedOptionIndex?: number | null,
   showAnswer?: boolean,
 ): OptionItemState {

@@ -3,24 +3,25 @@ import type { FC } from "hono/jsx";
 import { AdminMenu } from "../components/AdminMenu.tsx";
 import { AdminQuizz } from "../components/AdminQuizz.tsx";
 import { Layout } from "../components/Layout.tsx";
-import type { QuizzState } from "../logic/quizzStore.ts";
+import type { QuizzStore } from "../logic/quizzStore.ts";
 import type { Session } from "../logic/sessions.ts";
 
 type AdminPageProps = {
-  state: QuizzState;
+  store: QuizzStore;
   session: Session;
 };
 
-export const AdminPage: FC<AdminPageProps> = ({ state, session }) => {
+export const AdminPage: FC<AdminPageProps> = ({ store, session }) => {
+  const quizz = store.getQuizz();
   return (
     <Layout
-      title={state.quizz.name}
+      title={quizz.name}
       classList={css({ display: "grid", gridTemplateRows: "1fr" })}
       showLogoutButton
       headerLeftContent={<AdminMenu />}
     >
       <Box hx-sse:connect="/admin/stream" classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
-        <AdminQuizz state={state} session={session} />
+        <AdminQuizz store={store} session={session} />
       </Box>
     </Layout>
   );

@@ -1,9 +1,9 @@
 import { Stack } from "@dldc/hono-ui";
-import type { QuizzContent } from "../logic/quizzSchema.ts";
+import type { ContentBlocks } from "../logic/quizzSchema.ts";
 import { QuizzContentBlockDisplay } from "./ContentDisplay/QuizzContentBlockDisplay.tsx";
 
 interface ContentDisplayProps {
-  content: QuizzContent | null;
+  content: ContentBlocks | null;
 }
 
 export const ContentDisplay = (

@@ -79,26 +79,26 @@ app.get("/", async (c) => {
   const session = c.get("session");
   if (!session) {
     return await c.html(
-      <LoginPage title={store.getState().quizz.name} />,
+      <LoginPage title={store.getQuizz().name} />,
     );
   }
 
   return await c.html(
-    <HomePage session={session} state={store.getState()} />,
+    <HomePage session={session} store={store} />,
   );
 });
 
 app.get("/admin", (c) => {
   const session = c.get("session");
   if (!session) {
-    return c.html(<AdminLoginPage title={store.getState().quizz.name} />);
+    return c.html(<AdminLoginPage title={store.getQuizz().name} />);
   }
 
   if (!session.isAdmin) {
     return c.redirect("/");
   }
 
-  return c.html(<AdminPage state={store.getState()} session={session} />);
+  return c.html(<AdminPage store={store} session={session} />);
 });
 
 app.post(
@@ -177,7 +177,7 @@ app.get("/stream", (c) => {
   }
   return streamSSE(c, async (stream) => {
     await stream.writeSSE({
-      data: <UserQuizz session={session} state={store.getState()} />,
+      data: <UserQuizz session={session} store={store} />,
     });
 
     let queue = Promise.resolve();
@@ -188,7 +188,7 @@ app.get("/stream", (c) => {
       ) {
         queue = queue.then(async () => {
           await stream.writeSSE({
-            data: <UserQuizz session={session} state={store.getState()} />,
+            data: <UserQuizz session={session} store={store} />,
           });
         });
       }
@@ -209,14 +209,14 @@ app.get("/admin/stream", (c) => {
     return c.text("Unauthorized", 401);
   }
   return streamSSE(c, async (stream) => {
-    await stream.writeSSE({ data: <AdminQuizz state={store.getState()} session={session} /> });
+    await stream.writeSSE({ data: <AdminQuizz store={store} session={session} /> });
 
     let queue = Promise.resolve();
     const unsub = store.subscribe((event) => {
       if (event.type === "All" || event.type === "Admin" || (event.type === "User" && event.sessionId === session.id)) {
         queue = queue.then(async () => {
           await stream.writeSSE({
-            data: <AdminQuizz state={store.getState()} session={session} />,
+            data: <AdminQuizz store={store} session={session} />,
           });
         });
       }
