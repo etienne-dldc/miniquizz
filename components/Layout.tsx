@@ -1,5 +1,5 @@
 import { Box, type ClassListProp, css, Html, Stack, Title } from "@dldc/hono-ui";
-import { type Child, type FC, Fragment } from "hono/jsx";
+import { type Child, Fragment } from "@hono/hono/jsx";
 import { LogoutButton } from "./LogoutButton.tsx";
 
 type LayoutProps = {
@@ -10,8 +10,8 @@ type LayoutProps = {
   headerLeftContent?: Child;
 };
 
-export const Layout: FC<LayoutProps> = (
-  { title, children, classList, showLogoutButton, headerLeftContent },
+export const Layout = (
+  { title, children, classList, showLogoutButton, headerLeftContent }: LayoutProps,
 ) => {
   return (
     <Html
@@ -27,6 +27,7 @@ export const Layout: FC<LayoutProps> = (
           <script src="/public/libs/hx-sse.4.0.0-beta-3.min.js" />
           <script src="/public/utils/cleanup-css.js" />
           <script src="/public/utils/autofit.js" />
+          <script src="/public/utils/fullscreen.js" />
         </Fragment>
       }
     >

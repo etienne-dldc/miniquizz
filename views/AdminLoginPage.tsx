@@ -1,5 +1,5 @@
 import { Button, css, Icon, InlineGroup, Input, SrOnly, Stack, Typography } from "@dldc/hono-ui";
-import type { FC } from "hono/jsx";
+import type { FC } from "@hono/hono/jsx";
 import { ArrowRight } from "lucide-static";
 import { Layout } from "../components/Layout.tsx";
 

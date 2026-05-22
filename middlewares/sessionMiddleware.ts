@@ -1,8 +1,8 @@
-import { getCookie } from "hono/cookie";
-import { createMiddleware } from "hono/factory";
+import { getCookie } from "@hono/hono/cookie";
+import { createMiddleware } from "@hono/hono/factory";
 import type { Session, Sessions } from "../logic/sessions.ts";
 
-declare module "hono" {
+declare module "@hono/hono" {
   interface ContextVariableMap {
     session: Session | null;
   }

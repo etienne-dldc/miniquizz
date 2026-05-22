@@ -1,5 +1,5 @@
 import { Box, css } from "@dldc/hono-ui";
-import type { FC } from "hono/jsx";
+import type { FC } from "@hono/hono/jsx";
 import { AdminLive } from "../components/AdminLive.tsx";
 import { AdminMenu } from "../components/AdminMenu.tsx";
 import { Layout } from "../components/Layout.tsx";

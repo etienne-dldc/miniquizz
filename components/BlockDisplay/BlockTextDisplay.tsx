@@ -1,5 +1,5 @@
 import { css, Typography } from "@dldc/hono-ui";
-import { Fragment } from "hono/jsx";
+import { Fragment } from "@hono/hono/jsx";
 import type { Block_Text } from "../../logic/parseDoc.ts";
 
 interface BlockTextDisplayProps {

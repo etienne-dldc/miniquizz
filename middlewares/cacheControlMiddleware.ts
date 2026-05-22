@@ -1,4 +1,4 @@
-import { createMiddleware } from "hono/factory";
+import { createMiddleware } from "@hono/hono/factory";
 
 export const cacheControlMiddleware = createMiddleware(async (c, next) => {
   await next();

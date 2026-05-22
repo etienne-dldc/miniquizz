@@ -23,14 +23,13 @@
     "@std/expect": "jsr:@std/expect@^1.0.19",
     "@std/path": "jsr:@std/path@^1.1.4",
     "@valibot/valibot": "jsr:@valibot/valibot@^1.4.0",
-    "hono": "jsr:@hono/hono@^4.12.22",
     "immer": "npm:immer@^11.1.8",
     "lucide-static": "npm:lucide-static@^1.16.0",
     "shiki": "npm:shiki@^4.1.0"
   },
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    "jsxImportSource": "@hono/hono/jsx"
   },
   "fmt": {
     "lineWidth": 140

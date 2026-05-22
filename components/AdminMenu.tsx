@@ -1,5 +1,5 @@
 import { Button, css, Icon, Paper, SrOnly } from "@dldc/hono-ui";
-import type { FC } from "hono/jsx";
+import type { FC } from "@hono/hono/jsx";
 import { Menu } from "lucide-static";
 import { adminActionProps } from "../logic/actionProps.ts";
 

@@ -1,4 +1,4 @@
-import { type Child, createContext, useContext } from "hono/jsx";
+import { type Child, createContext, useContext } from "@hono/hono/jsx";
 import type { AppStore } from "../logic/store.ts";
 
 export const StoreContext = createContext<AppStore | null>(null);

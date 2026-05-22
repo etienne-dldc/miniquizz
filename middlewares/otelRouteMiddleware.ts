@@ -1,6 +1,6 @@
+import { createMiddleware } from "@hono/hono/factory";
+import { routePath } from "@hono/hono/route";
 import { SpanStatusCode, trace } from "@opentelemetry/api";
-import { createMiddleware } from "hono/factory";
-import { routePath } from "hono/route";
 
 export const otelRouteMiddleware = createMiddleware(async (c, next) => {
   try {

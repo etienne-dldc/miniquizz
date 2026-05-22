@@ -1,5 +1,5 @@
-import { Box, css } from "@dldc/hono-ui";
-import type { FC } from "hono/jsx";
+import { Box, Button, css, Icon, SrOnly } from "@dldc/hono-ui";
+import { Fullscreen } from "lucide-static";
 import { Layout } from "../components/Layout.tsx";
 import { UserLive } from "../components/UserLive.tsx";
 import { SessionProvider } from "../contexts/session.tsx";
@@ -12,12 +12,26 @@ type HomePageProps = {
   store: AppStore;
 };
 
-export const HomePage: FC<HomePageProps> = ({ session, store }) => {
+export const HomePage = ({ session, store }: HomePageProps) => {
   const doc = store.getDoc();
   return (
     <SessionProvider session={session}>
       <StoreProvider store={store}>
-        <Layout title={doc.name} classList={css({ display: "grid", gridTemplateRows: "1fr" })} showLogoutButton>
+        <Layout
+          title={doc.name}
+          classList={css({ display: "grid", gridTemplateRows: "1fr" })}
+          showLogoutButton
+          headerLeftContent={
+            <Button
+              variant="ghost"
+              size={12}
+              data-fullscreen
+            >
+              <Icon icon={Fullscreen} />
+              <SrOnly>Fullscreen</SrOnly>
+            </Button>
+          }
+        >
           <Box hx-sse:connect="/stream" classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
             <UserLive session={session} store={store} />
           </Box>

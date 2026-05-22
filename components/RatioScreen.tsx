@@ -1,5 +1,5 @@
 import { Box, type ClassListProp, css, flattenClassList } from "@dldc/hono-ui";
-import type { Child } from "hono/jsx";
+import type { Child } from "@hono/hono/jsx";
 
 interface RatioScreenProps {
   ratio: number;

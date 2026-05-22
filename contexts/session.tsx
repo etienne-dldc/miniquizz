@@ -1,4 +1,4 @@
-import { type Child, createContext, useContext } from "hono/jsx";
+import { type Child, createContext, useContext } from "@hono/hono/jsx";
 import type { Session } from "../logic/sessions.ts";
 
 export const SessionContext = createContext<Session | null>(null);
