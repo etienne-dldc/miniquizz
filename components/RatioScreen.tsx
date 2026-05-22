@@ -4,14 +4,13 @@ import type { Child } from "hono/jsx";
 interface RatioScreenProps {
   ratio: number;
   children: Child;
-  center?: boolean;
   classList?: ClassListProp;
 }
 
 const SIZE = 400;
 
 export const RatioScreen = (
-  { ratio, children, center, classList }: RatioScreenProps,
+  { ratio, children, classList }: RatioScreenProps,
 ) => {
   return (
     <Box data-autofit classList={css({ overflow: "hidden", position: "relative" })}>
@@ -24,19 +23,10 @@ export const RatioScreen = (
               position: "absolute",
               borderRadius: 3,
               cornerShape: "superellipse",
+              display: "grid",
+              gridTemplateColumns: "1fr",
+              gridTemplateRows: "1fr",
             },
-            center
-              ? {
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-              }
-              : {
-                display: "grid",
-                gridTemplateColumns: "1fr",
-                gridTemplateRows: "1fr",
-              },
           ),
           ...flattenClassList(classList),
         ]}

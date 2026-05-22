@@ -8,56 +8,6 @@
       "question": [
         {
           "type": "text",
-          "text": "What does HTML stand for?",
-          "size": 3,
-          "centered": true
-        }
-      ],
-      "layout": "horizontal",
-      "options": [
-        {
-          "content": [
-            {
-              "type": "text",
-              "text": "HyperText Markup Language"
-            }
-          ],
-          "isCorrect": true
-        },
-        {
-          "content": [
-            {
-              "type": "text",
-              "text": "HighText Machine Language"
-            }
-          ],
-          "isCorrect": false
-        },
-        {
-          "content": [
-            {
-              "type": "text",
-              "text": "Hyperlinks and Text Markup Language"
-            }
-          ],
-          "isCorrect": false
-        },
-        {
-          "content": [
-            {
-              "type": "text",
-              "text": "Home Tool Markup Language"
-            }
-          ],
-          "isCorrect": false
-        }
-      ]
-    },
-    {
-      "type": "question",
-      "question": [
-        {
-          "type": "text",
           "text": "Which JavaScript values are falsy?",
           "size": 2
         },

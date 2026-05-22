@@ -7,7 +7,7 @@ interface StatusProps {
 }
 
 export function Status({ store }: StatusProps) {
-  const currentStep = store.getCurrentStep();
+  const currentStep = store.getCurrentProgress();
   const quizz = store.getDoc();
   const { totalUsers, totalVotes } = store.getCurrentQuestionStats();
 
@@ -29,7 +29,7 @@ export function Status({ store }: StatusProps) {
       <Stack gap={4} alignItems="center">
         <Icon icon={MonitorPlay} size={7} />
         <Typography>
-          {currentStep.index + 1} / {quizz.steps.length}
+          {currentStep.stepIndex + 1} / {quizz.steps.length}
         </Typography>
       </Stack>
     </Stack>

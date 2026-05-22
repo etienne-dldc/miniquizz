@@ -1,5 +1,6 @@
 {
   "editor.formatOnSave": true,
+  "deno.enablePaths": [".", "./data"],
   "[typescript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },

@@ -1,8 +1,7 @@
 import { createSubscription, type SubscribeMethod } from "@dldc/pubsub";
 import { resolve } from "@std/path";
-import * as v from "@valibot/valibot";
 import type { AdminAction } from "./adminActionSchema.ts";
-import { type Doc, docSchema, type StepQuestion, type StepSlide } from "./docSchema.ts";
+import { type Block, type Doc, parseDoc, type Step } from "./parseDoc.ts";
 import type { Session } from "./sessions.ts";
 import type { UserAction } from "./userActionSchema.ts";
 import { restore, sanitize } from "./zenjson.ts";
@@ -19,21 +18,14 @@ export type AppEvent =
 
 export type AppSessionState = {
   isAdmin?: boolean;
-  votes: Map<number, number>;
+  votes: Map<number, string>;
 };
 
-export type AppStateProgress = {
-  index: number;
-  kind: "question";
-  step: "question" | "timesup" | "answer" | "explanation";
-} | {
-  index: number;
-  kind: "slide";
-};
+export type Options = { value: string; isCorrect: boolean }[];
 
-export type CurrentStep =
-  | { type: "question"; index: number; step: "question" | "timesup" | "answer" | "explanation"; question: StepQuestion }
-  | { type: "slide"; index: number; slide: StepSlide };
+export type AppProgress =
+  | { type: "question"; stepIndex: number; questionIndex: number; phase: "question" | "answer"; options: Options; step: Step }
+  | { type: "slide"; stepIndex: number; step: Step };
 
 export interface AppState {
   state: "running" | "idle";
@@ -44,7 +36,7 @@ export interface AppState {
 
 export interface CurrentSessionState {
   isAdmin?: boolean;
-  vote: number | null;
+  voteValue: string | null;
 }
 
 export interface CurrentQuestionStats {
@@ -57,7 +49,7 @@ export interface AppStore {
   dispatch: (action: AppAction) => void;
   getState: () => AppState;
   getDoc: () => Doc;
-  getCurrentStep: () => CurrentStep;
+  getCurrentProgress: () => AppProgress;
   getCurrentSessionState: (sessionId: string) => CurrentSessionState | null;
   getCurrentQuestionStats: () => CurrentQuestionStats;
 }
@@ -67,17 +59,18 @@ export async function createAppStore(
   storageKey: string,
 ): Promise<AppStore> {
   await ensureDataFolder(dataPath);
-  const doc = await readDataFile(dataPath);
+  const doc = await parseDoc(resolve(dataPath, "data.doc.tsx"));
   const sub = createSubscription<AppEvent>();
   let state: AppState = loadState(storageKey, doc);
-  const allSteps = computeAllSteps(state.doc);
+
+  const allProgress = computeAllProgress(state.doc);
 
   return {
     subscribe: sub.subscribe,
     dispatch,
     getState: () => state,
     getDoc: () => state.doc,
-    getCurrentStep,
+    getCurrentProgress,
     getCurrentSessionState,
     getCurrentQuestionStats,
   };
@@ -104,7 +97,7 @@ export async function createAppStore(
       if (state.state !== "running") {
         return;
       }
-      if (state.progress >= allSteps.length - 1) {
+      if (state.progress >= allProgress.length - 1) {
         return;
       }
       state.progress += 1;
@@ -127,14 +120,14 @@ export async function createAppStore(
     }
 
     if (action.type === "Vote") {
-      const step = getCurrentStep();
-      if (step.type !== "question") {
+      const progress = getCurrentProgress();
+      if (progress.type !== "question") {
         return;
       }
-      if (step.step !== "question" && step.step !== "timesup") {
+      if (progress.phase !== "question") {
         return;
       }
-      if (action.optionIndex < 0 || action.optionIndex >= step.question.options.length) {
+      if (!progress.options.some((option) => option.value === action.optionValue)) {
         return;
       }
       let sessionState = state.sessions.get(session.id);
@@ -142,7 +135,7 @@ export async function createAppStore(
         sessionState = { votes: new Map(), isAdmin: session.isAdmin };
         state.sessions.set(session.id, sessionState);
       }
-      sessionState.votes.set(step.index, action.optionIndex);
+      sessionState.votes.set(progress.questionIndex, action.optionValue);
       saveState(state, storageKey);
       sub.emit({ type: "User", sessionId: session.id });
       sub.emit({ type: "Admin" });
@@ -152,48 +145,38 @@ export async function createAppStore(
     action satisfies never;
   }
 
-  function getCurrentStep(): CurrentStep {
-    const stepState = allSteps[state.progress];
-    const step = state.doc.steps[stepState.index];
-
-    if (stepState.kind === "question") {
-      if (step.type !== "question") {
-        throw new Error(`Invalid state: expected question step at index ${stepState.index}`);
-      }
-      return { type: "question", index: stepState.index, question: step, step: stepState.step };
-    }
-    if (stepState.kind === "slide") {
-      if (step.type !== "slide") {
-        throw new Error(`Invalid state: expected slide step at index ${stepState.index}`);
-      }
-      return { type: "slide", index: stepState.index, slide: step };
-    }
-    stepState satisfies never;
-    throw new Error(`Invalid state: unknown step kind`);
+  function getCurrentProgress(): AppProgress {
+    const progressClamped = Math.max(0, Math.min(state.progress, allProgress.length - 1));
+    const progress = allProgress[progressClamped];
+    return progress;
   }
 
   function getCurrentSessionState(sessionId: string): CurrentSessionState | null {
     const sessionState = state.sessions.get(sessionId);
+    const progress = getCurrentProgress();
+    if (progress.type !== "question") {
+      return { isAdmin: true, voteValue: null };
+    }
     if (!sessionState) {
       return null;
     }
     return {
       isAdmin: sessionState.isAdmin,
-      vote: sessionState.votes.get(state.progress) ?? null,
+      voteValue: sessionState.votes.get(progress.questionIndex) ?? null,
     };
   }
 
   function getCurrentQuestionStats(): CurrentQuestionStats {
     const totalUsers = Array.from(state.sessions.values()).filter((sessionState) => !sessionState.isAdmin).length;
-    const currentStep = getCurrentStep();
-    if (currentStep.type !== "question") {
+    const progress = getCurrentProgress();
+    if (progress.type !== "question") {
       return { totalUsers, totalVotes: 0 };
     }
     const totalVotes = Array.from(state.sessions.values()).reduce((acc, sessionState) => {
       if (sessionState.isAdmin) {
         return acc;
       }
-      const vote = sessionState.votes.get(currentStep.index);
+      const vote = sessionState.votes.get(progress.questionIndex);
       if (vote !== undefined) {
         return acc + 1;
       }
@@ -250,36 +233,36 @@ async function ensureDataFolder(dataPath: string) {
   }
 }
 
-async function readDataFile(dataPath: string): Promise<Doc> {
-  const dataFilePath = resolve(dataPath, "data.json");
-  try {
-    const content = await Deno.readTextFile(dataFilePath);
-    const dataUnkown = JSON.parse(content);
-    return v.parse(docSchema, dataUnkown);
-  } catch (err) {
-    throw new Error(`Failed to read or parse app file at ${dataFilePath}`, {
-      cause: err,
-    });
-  }
-}
-
-function computeAllSteps(doc: Doc): AppStateProgress[] {
-  const steps: AppStateProgress[] = [];
+function computeAllProgress(doc: Doc): AppProgress[] {
+  const steps: AppProgress[] = [];
+  let questionIndex = 0;
   doc.steps.forEach((step, index) => {
-    if (step.type === "question") {
-      steps.push({ index, kind: "question", step: "question" });
-      steps.push({ index, kind: "question", step: "timesup" });
-      steps.push({ index, kind: "question", step: "answer" });
-      if (step.explanation) {
-        steps.push({ index, kind: "question", step: "explanation" });
-      }
+    const options = extractOptions(step);
+    if (options.length === 0) {
+      steps.push({ stepIndex: index, type: "slide", step });
       return;
     }
-    if (step.type === "slide") {
-      steps.push({ index, kind: "slide" });
-      return;
-    }
-    step satisfies never;
+    steps.push({ stepIndex: index, type: "question", questionIndex, options, phase: "question", step });
+    steps.push({ stepIndex: index, type: "question", questionIndex, options, phase: "answer", step });
+    questionIndex++;
   });
   return steps;
+}
+
+function extractOptions(step: Step): { value: string; isCorrect: boolean }[] {
+  function extractFromBlocks(blocks: Block[]): { value: string; isCorrect: boolean }[] {
+    let options: { value: string; isCorrect: boolean }[] = [];
+    for (const block of blocks) {
+      if (block.type === "QuizzOption") {
+        options.push({ value: block.value, isCorrect: block.isCorrect ?? false });
+        continue;
+      }
+      if ("children" in block) {
+        options = options.concat(extractFromBlocks(block.children));
+      }
+    }
+    return options;
+  }
+
+  return extractFromBlocks(step.blocks);
 }

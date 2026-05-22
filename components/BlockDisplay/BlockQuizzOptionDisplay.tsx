@@ -1,8 +1,9 @@
 import { css, cssVar, Stack, tokens, Typography } from "@dldc/hono-ui";
-import type { FC } from "hono/jsx";
-import { userActionProps } from "../logic/actionProps.ts";
-import type { StepQuestionOption } from "../logic/docSchema.ts";
-import { ContentDisplay } from "./ContentDisplay.tsx";
+import { useSession } from "../../contexts/session.tsx";
+import { useStore } from "../../contexts/store.tsx";
+import { userActionProps } from "../../logic/actionProps.ts";
+import type { Block_QuizzOption } from "../../logic/parseDoc.ts";
+import { BlockDisplay } from "../BlockDisplay.tsx";
 
 export type OptionItemState = "default" | "selected" | "correct" | "wrong" | "valid" | "invalid";
 
@@ -109,14 +110,29 @@ const stateClassNames: Record<OptionItemState, Promise<string>> = {
   }),
 };
 
-interface OptionItemProps {
-  index: number;
-  option: StepQuestionOption;
-  label: string;
-  state: OptionItemState;
+const LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+interface BlockQuizzOptionDisplayProps {
+  block: Block_QuizzOption;
 }
 
-export const OptionItem: FC<OptionItemProps> = ({ index, option, label, state }) => {
+export function BlockQuizzOptionDisplay({ block }: BlockQuizzOptionDisplayProps) {
+  const store = useStore();
+  const session = useSession();
+
+  const progress = store.getCurrentProgress();
+  if (progress.type !== "question") {
+    return (null);
+  }
+  const sessionState = store.getCurrentSessionState(session.id);
+  const optionIndex = progress.options.findIndex((option) => option.value === block.value);
+  if (optionIndex === -1) {
+    return null;
+  }
+  const label = LABELS[optionIndex % LABELS.length];
+  const option = progress.options[optionIndex];
+
+  const state = getOptionItemState(block.value, option.isCorrect ?? false, sessionState?.voteValue, progress.phase !== "question");
   const isInteractive = state === "default" || state === "selected";
 
   return (
@@ -126,12 +142,29 @@ export const OptionItem: FC<OptionItemProps> = ({ index, option, label, state })
       justifyContent="center"
       alignItems="center"
       classList={[rootClassName, stateClassNames[state], isInteractive && interactiveClassName]}
-      {...userActionProps({ type: "Vote", optionIndex: index })}
+      {...userActionProps({ type: "Vote", optionValue: option.value })}
     >
       <Typography classList={labelClassName}>
         {label}
       </Typography>
-      <ContentDisplay content={option.content} />
+      {block.children.map((child, index) => <BlockDisplay key={index} block={child} />)}
     </Stack>
   );
-};
+}
+
+function getOptionItemState(
+  value: string,
+  isCorrect: boolean,
+  selectedOptionValue?: string | null,
+  showAnswer?: boolean,
+): OptionItemState {
+  const isSelected = selectedOptionValue === value;
+  if (!showAnswer) {
+    return isSelected ? "selected" : "default";
+  }
+  // show answer
+  if (isSelected) {
+    return isCorrect ? "correct" : "wrong";
+  }
+  return isCorrect ? "valid" : "invalid";
+}

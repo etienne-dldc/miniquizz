@@ -1,0 +1,14 @@
+{
+  "fmt": {
+    "lineWidth": 140
+  },
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "lib": ["esnext"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "@dldc/tsx-doc"
+  },
+  "imports": {
+    "@dldc/tsx-doc": "jsr:@dldc/tsx-doc@^0.1.2"
+  }
+}
