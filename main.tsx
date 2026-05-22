@@ -179,6 +179,7 @@ app.get("/stream", (c) => {
     return c.text("Non autorise", 401);
   }
   return streamSSE(c, async (stream) => {
+    store.dispatch({ session, action: { type: "Join" } });
     await stream.writeSSE({
       data: <UserLiveQuizz session={session} store={store} />,
     });

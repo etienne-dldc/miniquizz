@@ -16,6 +16,12 @@ export declare function Box(props: { children: Node }): Element;
 />;
 
 <Step>
+  <Box>
+    <Text size={2}>Hello !</Text>
+  </Box>
+</Step>;
+
+<Step>
   <Grid rows="1fr 2fr">
     <Box>
       <Text size={2}>Que signifie HTML ?</Text>

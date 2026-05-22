@@ -21,9 +21,13 @@ export function Status({ store }: StatusProps) {
     >
       <Stack gap={4} alignItems="center">
         <Icon icon={User} size={7} />
-        <Typography>
-          {totalVotes} / {totalUsers}
-        </Typography>
+        {currentStep.type === "question"
+          ? (
+            <Typography>
+              {totalVotes} / {totalUsers}
+            </Typography>
+          )
+          : <Typography>{totalUsers}</Typography>}
       </Stack>
 
       <Stack gap={4} alignItems="center">

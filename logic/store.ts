@@ -9,7 +9,7 @@ import { restore, sanitize } from "./zenjson.ts";
 
 export type AppAction = {
   session: Session;
-  action: AdminAction | UserAction;
+  action: AdminAction | UserAction | { type: "Join" };
 };
 
 export type AppEvent = {
@@ -123,6 +123,17 @@ export async function createAppStore(
       saveStateThrottled();
       sub.emit({ audience: { type: "All" }, topic: "Quizz" });
       sub.emit({ audience: { type: "Admin" }, topic: "Status" });
+      return;
+    }
+
+    if (action.type === "Join") {
+      let sessionState = state.sessions.get(session.id);
+      if (!sessionState) {
+        sessionState = { votes: new Map(), isAdmin: session.isAdmin };
+        state.sessions.set(session.id, sessionState);
+        saveStateThrottled();
+        sub.emit({ audience: { type: "Admin" }, topic: "Status" });
+      }
       return;
     }
 
