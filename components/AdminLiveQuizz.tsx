@@ -6,12 +6,12 @@ import type { AppStore } from "../logic/store.ts";
 import { DocStep } from "./DocStep.tsx";
 import { Status } from "./Status.tsx";
 
-interface AdminLiveProps {
+interface AdminLiveQuizzProps {
   store: AppStore;
   session: Session;
 }
 
-export const AdminLive = ({ store, session }: AdminLiveProps) => {
+export const AdminLiveQuizz = ({ store, session }: AdminLiveQuizzProps) => {
   const state = store.getState();
 
   if (state.state === "idle") {

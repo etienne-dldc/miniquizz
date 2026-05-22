@@ -4,14 +4,12 @@ import type { Session } from "../logic/sessions.ts";
 import type { AppStore } from "../logic/store.ts";
 import { DocStep } from "./DocStep.tsx";
 
-interface UserLiveProps {
+interface UserLiveQuizzProps {
   store: AppStore;
   session: Session;
 }
 
-export const UserLive = (
-  { session, store }: UserLiveProps,
-) => {
+export const UserLiveQuizz = ({ session, store }: UserLiveQuizzProps) => {
   const state = store.getState();
   if (state.state === "idle") {
     return (
@@ -26,7 +24,6 @@ export const UserLive = (
     );
   }
   state.state satisfies "running";
-
   return (
     <Box classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
       <DocStep store={store} session={session} />

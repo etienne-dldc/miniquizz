@@ -5,8 +5,8 @@ import { streamSSE } from "@hono/hono/streaming";
 import { sValidator } from "@hono/standard-validator";
 import * as v from "@valibot/valibot";
 import console from "node:console";
-import { AdminLive } from "./components/AdminLive.tsx";
-import { UserLive } from "./components/UserLive.tsx";
+import { AdminLiveQuizz } from "./components/AdminLiveQuizz.tsx";
+import { UserLiveQuizz } from "./components/UserLiveQuizz.tsx";
 import denoJson from "./deno.json" with { type: "json" };
 import { adminActionSchema } from "./logic/adminActionSchema.ts";
 import { SESSION_COOKIE_NAME, SESSIONS_STORAGE_KEY, STATE_STORAGE_KEY } from "./logic/constants.ts";
@@ -177,7 +177,7 @@ app.get("/stream", (c) => {
   }
   return streamSSE(c, async (stream) => {
     await stream.writeSSE({
-      data: <UserLive session={session} store={store} />,
+      data: <UserLiveQuizz session={session} store={store} />,
     });
 
     let queue = Promise.resolve();
@@ -188,7 +188,7 @@ app.get("/stream", (c) => {
       ) {
         queue = queue.then(async () => {
           await stream.writeSSE({
-            data: <UserLive session={session} store={store} />,
+            data: <UserLiveQuizz session={session} store={store} />,
           });
         });
       }
@@ -209,14 +209,14 @@ app.get("/admin/stream", (c) => {
     return c.text("Non autorise", 401);
   }
   return streamSSE(c, async (stream) => {
-    await stream.writeSSE({ data: <AdminLive store={store} session={session} /> });
+    await stream.writeSSE({ data: <AdminLiveQuizz store={store} session={session} /> });
 
     let queue = Promise.resolve();
     const unsub = store.subscribe((event) => {
       if (event.type === "All" || event.type === "Admin" || (event.type === "User" && event.sessionId === session.id)) {
         queue = queue.then(async () => {
           await stream.writeSSE({
-            data: <AdminLive store={store} session={session} />,
+            data: <AdminLiveQuizz store={store} session={session} />,
           });
         });
       }

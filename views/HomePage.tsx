@@ -1,7 +1,7 @@
 import { Box, Button, css, Icon, SrOnly } from "@dldc/hono-ui";
 import { Fullscreen } from "lucide-static";
 import { Layout } from "../components/Layout.tsx";
-import { UserLive } from "../components/UserLive.tsx";
+import { UserLiveQuizz } from "../components/UserLiveQuizz.tsx";
 import { SessionProvider } from "../contexts/session.tsx";
 import { StoreProvider } from "../contexts/store.tsx";
 import type { Session } from "../logic/sessions.ts";
@@ -34,7 +34,7 @@ export const HomePage = ({ session, store }: HomePageProps) => {
           }
         >
           <Box hx-sse:connect="/stream" classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
-            <UserLive session={session} store={store} />
+            <UserLiveQuizz session={session} store={store} />
           </Box>
         </Layout>
       </StoreProvider>

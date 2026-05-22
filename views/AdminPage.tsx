@@ -1,6 +1,6 @@
 import { Box, css } from "@dldc/hono-ui";
 import type { FC } from "@hono/hono/jsx";
-import { AdminLive } from "../components/AdminLive.tsx";
+import { AdminLiveQuizz } from "../components/AdminLiveQuizz.tsx";
 import { AdminMenu } from "../components/AdminMenu.tsx";
 import { Layout } from "../components/Layout.tsx";
 import { SessionProvider } from "../contexts/session.tsx";
@@ -25,7 +25,7 @@ export const AdminPage: FC<AdminPageProps> = ({ store, session }) => {
           headerLeftContent={<AdminMenu />}
         >
           <Box hx-sse:connect="/admin/stream" classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
-            <AdminLive store={store} session={session} />
+            <AdminLiveQuizz store={store} session={session} />
           </Box>
         </Layout>
       </StoreProvider>

@@ -12,6 +12,7 @@
     "jsr:@hono/hono@^4.12.22": "4.12.22",
     "jsr:@hono/hono@^4.8.3": "4.12.22",
     "jsr:@hono/standard-validator@~0.2.2": "0.2.2",
+    "jsr:@standard-schema/spec@1": "1.0.0",
     "jsr:@std/assert@^1.0.19": "1.0.19",
     "jsr:@std/expect@^1.0.19": "1.0.19",
     "jsr:@std/fs@1": "1.0.23",
@@ -25,7 +26,8 @@
     "npm:@opentelemetry/api@^1.9.1": "1.9.1",
     "npm:immer@^11.1.8": "11.1.8",
     "npm:lucide-static@^1.16.0": "1.16.0",
-    "npm:shiki@^4.1.0": "4.1.0"
+    "npm:shiki@^4.1.0": "4.1.0",
+    "npm:type-fest@^5.6.0": "5.6.0"
   },
   "jsr": {
     "@david/code-block-writer@13.0.3": {
@@ -41,7 +43,9 @@
       "integrity": "531a670bb52cb862f9377ec40a9ef091c02b64cd6b4690d1604f799522a5f59d",
       "dependencies": [
         "jsr:@dldc/css-builder",
-        "jsr:@hono/hono@^4.12.21"
+        "jsr:@dldc/hono-ui",
+        "jsr:@hono/hono@^4.12.21",
+        "npm:type-fest"
       ]
     },
     "@dldc/pubsub@7.1.0": {
@@ -53,6 +57,7 @@
     "@dldc/tsx-doc@0.2.0": {
       "integrity": "26a059116fdf3027048154bfff3ced9035f39855d316c4e4a95c8de3a066f5a1",
       "dependencies": [
+        "jsr:@dldc/tsx-doc",
         "jsr:@ts-morph/ts-morph"
       ]
     },
@@ -68,8 +73,12 @@
     "@hono/standard-validator@0.2.2": {
       "integrity": "bc94e1ab41d677a571cb6dd5012823f1162b9856ca24dfd60233734824bb0b0c",
       "dependencies": [
-        "jsr:@hono/hono@^4.8.3"
+        "jsr:@hono/hono@^4.8.3",
+        "jsr:@standard-schema/spec"
       ]
+    },
+    "@standard-schema/spec@1.0.0": {
+      "integrity": "4f20bbcf34e92b92f8c01589b958abc7c87385fa9a96170cecdc643d4d5737c0"
     },
     "@std/assert@1.0.19": {
       "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e",
@@ -338,8 +347,17 @@
         "character-entities-legacy"
       ]
     },
+    "tagged-tag@1.0.0": {
+      "integrity": "sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng=="
+    },
     "trim-lines@3.0.1": {
       "integrity": "sha512-kRj8B+YHZCc9kQYdWfJB2/oUl9rA99qbowYYBtr4ui4mZyAQ2JpvVBd/6U2YloATfqBhBTSMhTpgBHtU0Mf3Rg=="
+    },
+    "type-fest@5.6.0": {
+      "integrity": "sha512-8ZiHFm91orbSAe2PSAiSVBVko18pbhbiB3U9GglSzF/zCGkR+rxpHx6sEMCUm4kxY4LjDIUGgCfUMtwfZfjfUA==",
+      "dependencies": [
+        "tagged-tag"
+      ]
     },
     "unist-util-is@6.0.1": {
       "integrity": "sha512-LsiILbtBETkDz8I9p1dQ0uyRUWuaQzd/cuEeS1hoRSyW5E5XGmTzlwY1OrNzzakGowI9Dr/I8HVaw4hTtnxy8g==",
