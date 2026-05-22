@@ -26,6 +26,7 @@ export const HomePage = ({ session, store }: HomePageProps) => {
               variant="ghost"
               size={12}
               data-fullscreen
+              data-fullscreen-orientation="landscape"
             >
               <Icon icon={Fullscreen} />
               <SrOnly>Fullscreen</SrOnly>

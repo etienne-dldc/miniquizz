@@ -1,10 +1,11 @@
 /**
  * Handles click on any [data-fullscreen] element and requests fullscreen.
- * It also attempts to lock the orientation to portrait while fullscreen.
+ * It also attempts to lock the orientation while fullscreen.
  *
  * Optional attributes on the trigger element:
  * - data-fullscreen-target: CSS selector for the element to fullscreen
  * - data-fullscreen-target-closest: CSS selector resolved with closest()
+ * - data-fullscreen-orientation: ScreenOrientationLockType to request while fullscreen
  */
 
 (function fullscreenUtility() {
@@ -59,13 +60,17 @@
     return document.documentElement;
   }
 
-  async function lockPortraitFor(element) {
+  function resolveFullscreenOrientation(trigger) {
+    return trigger.getAttribute("data-fullscreen-orientation") || "portrait";
+  }
+
+  async function lockOrientationFor(element, orientation) {
     if (!screen.orientation || typeof screen.orientation.lock !== "function") {
       return;
     }
 
     try {
-      await screen.orientation.lock("portrait");
+      await screen.orientation.lock(orientation);
       activeOrientationLocks.add(element);
     } catch {
       // Orientation lock commonly fails on unsupported browsers/platforms.
@@ -93,6 +98,7 @@
 
   async function toggleFullscreen(trigger) {
     const target = resolveFullscreenTarget(trigger);
+    const orientation = resolveFullscreenOrientation(trigger);
     const fullscreenElement = getFullscreenElement();
 
     if (fullscreenElement) {
@@ -102,7 +108,7 @@
     }
 
     await requestElementFullscreen(target);
-    await lockPortraitFor(target);
+    await lockOrientationFor(target, orientation);
   }
 
   async function onDocumentClick(event) {
