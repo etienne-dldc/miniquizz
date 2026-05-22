@@ -47,9 +47,12 @@ function nullable(raw: string | undefined): string | null {
   return trimmed && trimmed.length > 0 ? trimmed : null;
 }
 
-function requireString(name: string): string {
+function requireString(name: string, defaultValue?: string): string {
   const val = Deno.env.get(name)?.trim();
   if (!val) {
+    if (defaultValue !== undefined) {
+      return defaultValue;
+    }
     throw new Error(`[env] Missing required environment variable: ${name}`);
   }
   return val;
@@ -59,8 +62,8 @@ export function readEnv(): AppEnv {
   return {
     port: parsePort(Deno.env.get("PORT")),
     adminPassword: requireString("ADMIN_PASSWORD"),
-    dataFolderPath: requireString("DATA_FOLDER_PATH"),
-    storageFolderPath: requireString("STORAGE_FOLDER_PATH"),
+    dataFolderPath: requireString("DATA_FOLDER_PATH", "/app/data"),
+    storageFolderPath: requireString("STORAGE_FOLDER_PATH", "/app/storage"),
     otel: {
       denoEnabled: parseFlag(Deno.env.get("OTEL_DENO")),
       denoConsole: nullable(Deno.env.get("OTEL_DENO_CONSOLE")),
