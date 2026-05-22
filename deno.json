@@ -7,7 +7,7 @@
     "deps:outdated": "deno outdated",
     "deps:update": "deno outdated --update --latest --interactive",
     "check": "deno fmt --check . && deno lint . && deno check .",
-    "start": "deno run --config deno.json --allow-net --allow-env --allow-read --no-prompt main.tsx",
+    "start": "deno run --config deno.json --allow-net --allow-env --allow-read --allow-write=/app/storage --no-prompt main.tsx",
     "dev": "deno run --env-file=.env --config deno.json --allow-net --allow-env --allow-read --allow-write=./storage --no-prompt --watch main.tsx",
     "test:run": "deno test --allow-all"
   },
