@@ -61,3 +61,86 @@ export declare function Box(props: { children: Node }): Element;
     </Grid>
   </Grid>
 </Step>;
+
+<Step>
+  <Grid rows="1fr 1fr">
+    <Box>
+      <Text size={1}>What will this TypeScript function return for n = 4?</Text>
+      <Code size={1}>
+        {"function sumTo(n: number): number {\n  let sum = 0;\n  for (let i = 1; i <= n; i++) sum += i;\n  return sum;\n}"}
+      </Code>
+    </Box>
+    <Grid rows="1fr" columns="1fr 1fr 1fr">
+      <QuizzOption value="option1">
+        <Code>6</Code>
+      </QuizzOption>
+      <QuizzOption value="option2" isCorrect>
+        <Code>10</Code>
+      </QuizzOption>
+      <QuizzOption value="option3">
+        <Code>16</Code>
+      </QuizzOption>
+    </Grid>
+  </Grid>
+</Step>;
+
+<Step>
+  <Grid rows="1.5fr 1fr">
+    <Box>
+      <Text size={1}>Identify the logo shown in the image.</Text>
+      <Image src="/data/deno-logo.svg" alt="A circle logo with a dinosaur silhouette" size={6} />
+    </Box>
+    <Grid rows="1fr" columns="1fr 1fr 1fr">
+      <QuizzOption value="option1">
+        <Text>Node.js</Text>
+      </QuizzOption>
+      <QuizzOption value="option2" isCorrect>
+        <Text>Deno</Text>
+      </QuizzOption>
+      <QuizzOption value="option3">
+        <Text>Bun</Text>
+      </QuizzOption>
+    </Grid>
+  </Grid>
+</Step>;
+
+<Step>
+  <Grid rows="1fr 2fr">
+    <Box>
+      <Text size={2.5}>Select all valid HTTP methods from the list below.</Text>
+    </Box>
+    <Grid rows="1fr 1fr" columns="1fr 1fr">
+      <QuizzOption value="option1" isCorrect>
+        <Text>GET</Text>
+      </QuizzOption>
+      <QuizzOption value="option2" isCorrect>
+        <Text>POST</Text>
+      </QuizzOption>
+      <QuizzOption value="option3">
+        <Text>FETCH</Text>
+      </QuizzOption>
+      <QuizzOption value="option4">
+        <Text>UPDATE</Text>
+      </QuizzOption>
+    </Grid>
+  </Grid>
+</Step>;
+
+<Step>
+  <Grid rows="1fr 2fr">
+    <Box>
+      <Text>Pick the expression that creates an array with values 1, 2, 3 in JavaScript.</Text>
+    </Box>
+    <Grid rows="1fr" columns="1fr 1fr 1fr">
+      <QuizzOption value="option1" isCorrect>
+        <Code>[1, 2, 3]</Code>
+      </QuizzOption>
+      <QuizzOption value="option2">
+        <Code>{"{1, 2, 3}"}</Code>
+      </QuizzOption>
+      <QuizzOption value="option3">
+        <Code>(1, 2, 3)</Code>
+      </QuizzOption>
+    </Grid>
+  </Grid>
+</Step>;

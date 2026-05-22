@@ -7,11 +7,7 @@ interface BlockCodeDisplayProps {
 }
 
 export async function BlockCodeDisplay({ block }: BlockCodeDisplayProps) {
-  console.log(block);
-
   let codeLines = Array.isArray(block.code) ? block.code : [block.code];
-  console.log({ codeLines });
-
   if (block.wrapSize && block.wrapSize > 0) {
     const wrappedLines: string[] = [];
     for (const line of codeLines) {

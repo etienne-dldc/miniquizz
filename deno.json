@@ -15,15 +15,15 @@
   "imports": {
     "@dldc/hono-ui": "jsr:@dldc/hono-ui@^2.3.1",
     "@dldc/pubsub": "jsr:@dldc/pubsub@^7.1.0",
-    "@dldc/tsx-doc": "jsr:@dldc/tsx-doc@^0.1.2",
+    "@dldc/tsx-doc": "jsr:@dldc/tsx-doc@^0.2.0",
     "@dldc/zenjson": "jsr:@dldc/zenjson@^3.0.1",
-    "@hono/hono": "jsr:@hono/hono@^4.12.21",
+    "@hono/hono": "jsr:@hono/hono@^4.12.22",
     "@hono/standard-validator": "jsr:@hono/standard-validator@^0.2.2",
     "@opentelemetry/api": "npm:@opentelemetry/api@^1.9.1",
     "@std/expect": "jsr:@std/expect@^1.0.19",
     "@std/path": "jsr:@std/path@^1.1.4",
     "@valibot/valibot": "jsr:@valibot/valibot@^1.4.0",
-    "hono": "jsr:@hono/hono@^4.12.21",
+    "hono": "jsr:@hono/hono@^4.12.22",
     "immer": "npm:immer@^11.1.8",
     "lucide-static": "npm:lucide-static@^1.16.0",
     "shiki": "npm:shiki@^4.1.0"

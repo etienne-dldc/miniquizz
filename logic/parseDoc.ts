@@ -63,7 +63,7 @@ const configAttrSchema = v.object({
 
 const blockTextAttrSchema = v.object({
   size: v.optional(v.pipe(v.number(), v.minValue(0)), 1),
-  centered: v.optional(v.boolean()),
+  centered: v.optional(v.boolean(), true),
 });
 
 const blockCodeAttrSchema = v.object({

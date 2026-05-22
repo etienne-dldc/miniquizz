@@ -32,7 +32,7 @@ export const AdminLive = ({ store, session }: AdminLiveProps) => {
   }
   state.state satisfies "running";
   return (
-    <Box classList={css({ display: "grid", gridTemplateRows: "1fr auto" })}>
+    <Box classList={css({ display: "grid", gridTemplateRows: "1fr auto", gap: 4 })}>
       <DocStep store={store} session={session} />
       <Status store={store} />
     </Box>
