@@ -284,5 +284,32 @@ app.post("/admin/action", sValidator("form", adminActionSchema), (c) => {
   return c.text("OK");
 });
 
-console.info(`Miniquizz listening on :${appEnv.port}`);
-Deno.serve({ port: appEnv.port }, app.fetch);
+const abortController = new AbortController();
+const server = Deno.serve({
+  port: appEnv.port,
+  signal: abortController.signal,
+  onListen: () => {
+    console.info(`Server is listening on port ${appEnv.port}`);
+  },
+}, app.fetch);
+
+let shuttingDown = false;
+const shutdown = async (signal: "SIGINT" | "SIGTERM") => {
+  if (shuttingDown) {
+    return;
+  }
+  shuttingDown = true;
+  console.info(`Received ${signal}, shutting down`);
+  abortController.abort();
+  await store.dispose();
+};
+
+Deno.addSignalListener("SIGINT", () => {
+  void shutdown("SIGINT");
+});
+
+Deno.addSignalListener("SIGTERM", () => {
+  void shutdown("SIGTERM");
+});
+
+await server.finished;

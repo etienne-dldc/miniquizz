@@ -53,6 +53,7 @@ export interface AppStore {
   getCurrentProgress: () => AppProgress;
   getCurrentSessionState: (sessionId: string) => CurrentSessionState | null;
   getCurrentQuestionStats: () => CurrentQuestionStats;
+  dispose: () => Promise<void>;
 }
 
 export async function createAppStore(
@@ -61,12 +62,19 @@ export async function createAppStore(
   storageKey: string,
 ): Promise<AppStore> {
   await ensureDataFolder(dataPath);
-  const doc = await parseDoc(resolve(dataPath, "data.doc.tsx"));
+  const docFilePath = resolve(dataPath, "data.doc.tsx");
   const sub = createSubscription<AppEvent>();
-  let state: AppState = loadState(storage, storageKey, doc);
+  let state: AppState = loadState(storage, storageKey, await parseDoc(docFilePath));
+  let allProgress = computeAllProgress(state.doc);
+  state = reconcileStateWithDoc(state, allProgress);
 
-  const allProgress = computeAllProgress(state.doc);
   const saveStateThrottled = throttle(saveState, 200);
+  const watcher = Deno.watchFs(dataPath);
+  let disposed = false;
+  let isReloadingDoc = false;
+  let docReloadQueued = false;
+  let docReloadDebounceHandle: number | null = null;
+  const watchTask = watchDocChanges();
 
   return {
     subscribe: sub.subscribe,
@@ -76,7 +84,88 @@ export async function createAppStore(
     getCurrentProgress,
     getCurrentSessionState,
     getCurrentQuestionStats,
+    dispose,
   };
+
+  async function dispose() {
+    if (disposed) {
+      return;
+    }
+    disposed = true;
+    if (docReloadDebounceHandle !== null) {
+      clearTimeout(docReloadDebounceHandle);
+      docReloadDebounceHandle = null;
+    }
+    watcher.close();
+    try {
+      await watchTask;
+    } catch (err) {
+      console.error("Failed while disposing doc watcher", err);
+    }
+  }
+
+  async function watchDocChanges() {
+    try {
+      for await (const event of watcher) {
+        if (disposed) {
+          return;
+        }
+        if (!isDocFileEvent(event)) {
+          continue;
+        }
+        scheduleDocReload();
+      }
+    } catch (err) {
+      if (!disposed) {
+        console.error("Doc watcher crashed", err);
+      }
+    }
+  }
+
+  function isDocFileEvent(event: Deno.FsEvent): boolean {
+    return event.paths.some((path) => resolve(path) === docFilePath);
+  }
+
+  function scheduleDocReload() {
+    if (docReloadDebounceHandle !== null) {
+      clearTimeout(docReloadDebounceHandle);
+    }
+    docReloadDebounceHandle = setTimeout(() => {
+      docReloadDebounceHandle = null;
+      void reloadDoc();
+    }, 100);
+  }
+
+  async function reloadDoc() {
+    if (disposed) {
+      return;
+    }
+    if (isReloadingDoc) {
+      docReloadQueued = true;
+      return;
+    }
+    isReloadingDoc = true;
+    try {
+      const nextDoc = await parseDoc(docFilePath);
+      allProgress = computeAllProgress(nextDoc);
+      state = reconcileStateWithDoc({ ...state, doc: nextDoc }, allProgress);
+      saveStateThrottled();
+      emitAllTopicsRefresh();
+    } catch (err) {
+      console.error("Failed to reload doc after filesystem change", err);
+    } finally {
+      isReloadingDoc = false;
+      if (docReloadQueued) {
+        docReloadQueued = false;
+        void reloadDoc();
+      }
+    }
+  }
+
+  function emitAllTopicsRefresh() {
+    sub.emit({ audience: { type: "All" }, topic: "Quizz" });
+    sub.emit({ audience: { type: "All" }, topic: "Status" });
+  }
 
   function dispatch({ action, session }: AppAction) {
     if (action.type === "Reset") {
@@ -235,6 +324,50 @@ function createInitialAppState(doc: Doc): AppState {
     progress: 0,
     sessions: new Map(),
   };
+}
+
+function reconcileStateWithDoc(state: AppState, allProgress: AppProgress[]): AppState {
+  const nextState: AppState = {
+    ...state,
+    sessions: new Map(),
+    progress: clampProgress(state.progress, allProgress.length),
+  };
+  const optionsByQuestionIndex = buildOptionsByQuestionIndex(allProgress);
+
+  for (const [sessionId, sessionState] of state.sessions.entries()) {
+    const filteredVotes = new Map<number, string>();
+    for (const [questionIndex, vote] of sessionState.votes.entries()) {
+      const validOptions = optionsByQuestionIndex.get(questionIndex);
+      if (!validOptions || !validOptions.has(vote)) {
+        continue;
+      }
+      filteredVotes.set(questionIndex, vote);
+    }
+    nextState.sessions.set(sessionId, { ...sessionState, votes: filteredVotes });
+  }
+
+  return nextState;
+}
+
+function clampProgress(progress: number, allProgressLength: number): number {
+  if (allProgressLength <= 0) {
+    return 0;
+  }
+  return Math.max(0, Math.min(progress, allProgressLength - 1));
+}
+
+function buildOptionsByQuestionIndex(allProgress: AppProgress[]): Map<number, Set<string>> {
+  const optionsByQuestionIndex = new Map<number, Set<string>>();
+  for (const progress of allProgress) {
+    if (progress.type !== "question" || progress.phase !== "question") {
+      continue;
+    }
+    optionsByQuestionIndex.set(
+      progress.questionIndex,
+      new Set(progress.options.map((option) => option.value)),
+    );
+  }
+  return optionsByQuestionIndex;
 }
 
 function loadState(storage: Storage, storageKey: string, doc: Doc): AppState {
