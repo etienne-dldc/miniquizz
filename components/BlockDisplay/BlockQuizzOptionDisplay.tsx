@@ -10,24 +10,28 @@ export type OptionItemState = "default" | "selected" | "correct" | "wrong" | "va
 const itemBg = cssVar("option-item-bg");
 const labelBg = cssVar("option-label-bg");
 const borderColor = cssVar("option-border-color");
+const borderWidth = cssVar("option-border-width");
 
 const rootClassName = css({
   position: "relative",
   cornerShape: "superellipse",
-  borderWidth: "1px",
+  borderWidth: borderWidth,
   borderStyle: "solid",
   borderRadius: 2,
   padding: 2,
   transition: "border-color 120ms ease-out, background-color 120ms ease-out",
   background: itemBg,
   borderColor: "white/10",
+  vars: {
+    [borderWidth.name]: "1px",
+  },
   selectors: {
     "&::before": {
       content: "empty",
       borderRadius: "inherit",
       cornerShape: "inherit",
       position: "absolute",
-      inset: 0,
+      inset: `[calc(-1 * ${borderWidth})]`,
       borderWidth: "3px",
       borderStyle: "solid",
       borderColor: borderColor,

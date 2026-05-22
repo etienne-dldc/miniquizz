@@ -1,6 +1,6 @@
 import { Button, css, Icon, Paper, SrOnly } from "@dldc/hono-ui";
 import type { FC } from "@hono/hono/jsx";
-import { Menu } from "lucide-static";
+import { ArrowLeft, ArrowRight, ListRestart, Menu, RotateCcw } from "lucide-static";
 import { adminActionProps } from "../logic/actionProps.ts";
 
 const popoverStyle = css({
@@ -34,13 +34,20 @@ export const AdminMenu: FC = () => {
       <div id="admin-menu" popover="auto" class={popoverStyle}>
         <Paper flexDirection="column" gap={2} padding={4} classList={css({ minWidth: 100, borderRadius: 6 })}>
           <Button {...adminActionProps({ type: "Reset" })} hx-confirm="Reinitialiser le quiz ? Cette action est irreversible.">
+            <Icon icon={ListRestart} />
             Reinitialiser le quiz
           </Button>
           <Button {...adminActionProps({ type: "Prev" }, "ArrowLeft")}>
+            <Icon icon={ArrowLeft} />
             Precedent
           </Button>
           <Button {...adminActionProps({ type: "Next" }, "ArrowRight")}>
+            <Icon icon={ArrowRight} />
             Suivant
+          </Button>
+          <Button {...adminActionProps({ type: "ResetStep" })} hx-confirm="Reinitialiser la question ?">
+            <Icon icon={RotateCcw} />
+            Reinitialiser la question
           </Button>
         </Paper>
       </div>

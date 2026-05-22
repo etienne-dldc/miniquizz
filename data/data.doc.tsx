@@ -107,7 +107,7 @@ export declare function Box(props: { children: Node }): Element;
 <Step>
   <Grid rows="1fr 2fr">
     <Box>
-      <Text size={2.5}>Selectionnez toutes les methodes HTTP valides dans la liste ci-dessous.</Text>
+      <Text size={1.5}>Selectionnez toutes les methodes HTTP valides dans la liste ci-dessous.</Text>
     </Box>
     <Grid rows="1fr 1fr" columns="1fr 1fr">
       <QuizzOption value="option1" isCorrect>

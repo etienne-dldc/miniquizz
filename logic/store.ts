@@ -11,10 +11,10 @@ export type AppAction = {
   action: AdminAction | UserAction;
 };
 
-export type AppEvent =
-  | { type: "All" }
-  | { type: "User"; sessionId: string }
-  | { type: "Admin" };
+export type AppEvent = {
+  audience: { type: "All" } | { type: "User"; sessionId: string } | { type: "Admin" };
+  topic: "Quizz" | "Status";
+};
 
 export type AppSessionState = {
   isAdmin?: boolean;
@@ -78,7 +78,8 @@ export async function createAppStore(
   function dispatch({ action, session }: AppAction) {
     if (action.type === "Reset") {
       state = createInitialAppState(state.doc);
-      sub.emit({ type: "All" });
+      sub.emit({ audience: { type: "All" }, topic: "Quizz" });
+      sub.emit({ audience: { type: "All" }, topic: "Status" });
       saveState(state, storageKey);
       return;
     }
@@ -88,7 +89,8 @@ export async function createAppStore(
         return;
       }
       state.state = "running";
-      sub.emit({ type: "All" });
+      sub.emit({ audience: { type: "All" }, topic: "Quizz" });
+      sub.emit({ audience: { type: "Admin" }, topic: "Status" });
       saveState(state, storageKey);
       return;
     }
@@ -102,7 +104,8 @@ export async function createAppStore(
       }
       state.progress += 1;
       saveState(state, storageKey);
-      sub.emit({ type: "All" });
+      sub.emit({ audience: { type: "All" }, topic: "Quizz" });
+      sub.emit({ audience: { type: "Admin" }, topic: "Status" });
       return;
     }
 
@@ -115,7 +118,8 @@ export async function createAppStore(
       }
       state.progress -= 1;
       saveState(state, storageKey);
-      sub.emit({ type: "All" });
+      sub.emit({ audience: { type: "All" }, topic: "Quizz" });
+      sub.emit({ audience: { type: "Admin" }, topic: "Status" });
       return;
     }
 
@@ -137,8 +141,23 @@ export async function createAppStore(
       }
       sessionState.votes.set(progress.questionIndex, action.optionValue);
       saveState(state, storageKey);
-      sub.emit({ type: "User", sessionId: session.id });
-      sub.emit({ type: "Admin" });
+      sub.emit({ audience: { type: "User", sessionId: session.id }, topic: "Quizz" });
+      sub.emit({ audience: { type: "Admin" }, topic: "Status" });
+      return;
+    }
+
+    if (action.type === "ResetStep") {
+      const progress = getCurrentProgress();
+      if (progress.type !== "question") {
+        return;
+      }
+      const questionIndex = progress.questionIndex;
+      for (const sessionState of state.sessions.values()) {
+        sessionState.votes.delete(questionIndex);
+      }
+      saveState(state, storageKey);
+      sub.emit({ audience: { type: "All" }, topic: "Quizz" });
+      sub.emit({ audience: { type: "Admin" }, topic: "Status" });
       return;
     }
 

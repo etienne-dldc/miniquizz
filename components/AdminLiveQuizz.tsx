@@ -4,7 +4,6 @@ import { adminActionProps } from "../logic/actionProps.ts";
 import type { Session } from "../logic/sessions.ts";
 import type { AppStore } from "../logic/store.ts";
 import { DocStep } from "./DocStep.tsx";
-import { Status } from "./Status.tsx";
 
 interface AdminLiveQuizzProps {
   store: AppStore;
@@ -32,9 +31,8 @@ export const AdminLiveQuizz = ({ store, session }: AdminLiveQuizzProps) => {
   }
   state.state satisfies "running";
   return (
-    <Box classList={css({ display: "grid", gridTemplateRows: "1fr auto", gap: 4 })}>
+    <Box classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
       <DocStep store={store} session={session} />
-      <Status store={store} />
     </Box>
   );
 };

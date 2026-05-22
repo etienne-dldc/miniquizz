@@ -6,6 +6,15 @@ interface BlockGridDisplayProps {
   block: Block_Grid;
 }
 
+const gridCellClassName = css({ position: "relative" });
+const gridCellInnerClassName = css({
+  position: "absolute",
+  inset: 0,
+  display: "grid",
+  gridTemplateColumns: "1fr",
+  gridTemplateRows: "1fr",
+});
+
 export function BlockGridDisplay({ block }: BlockGridDisplayProps) {
   return (
     <Box
@@ -16,7 +25,13 @@ export function BlockGridDisplay({ block }: BlockGridDisplayProps) {
         gridTemplateRows: block.rows ?? "1fr",
       })}
     >
-      {block.children.map((child, index) => <BlockDisplay key={index} block={child} />)}
+      {block.children.map((child, index) => (
+        <Box key={index} classList={gridCellClassName}>
+          <Box classList={gridCellInnerClassName}>
+            <BlockDisplay block={child} />
+          </Box>
+        </Box>
+      ))}
     </Box>
   );
 }

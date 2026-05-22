@@ -6,6 +6,7 @@ import { sValidator } from "@hono/standard-validator";
 import * as v from "@valibot/valibot";
 import console from "node:console";
 import { AdminLiveQuizz } from "./components/AdminLiveQuizz.tsx";
+import { Status } from "./components/Status.tsx";
 import { UserLiveQuizz } from "./components/UserLiveQuizz.tsx";
 import denoJson from "./deno.json" with { type: "json" };
 import { adminActionSchema } from "./logic/adminActionSchema.ts";
@@ -182,10 +183,8 @@ app.get("/stream", (c) => {
 
     let queue = Promise.resolve();
     const unsub = store.subscribe((event) => {
-      if (
-        event.type === "All" ||
-        (event.type === "User" && event.sessionId === session.id)
-      ) {
+      const isUserAudience = event.audience.type === "All" || (event.audience.type === "User" && event.audience.sessionId === session.id);
+      if (event.topic === "Quizz" && isUserAudience) {
         queue = queue.then(async () => {
           await stream.writeSSE({
             data: <UserLiveQuizz session={session} store={store} />,
@@ -203,7 +202,7 @@ app.get("/stream", (c) => {
   });
 });
 
-app.get("/admin/stream", (c) => {
+app.get("/admin/stream/quizz", (c) => {
   const session = c.get("session");
   if (!session || !session.isAdmin) {
     return c.text("Non autorise", 401);
@@ -213,10 +212,41 @@ app.get("/admin/stream", (c) => {
 
     let queue = Promise.resolve();
     const unsub = store.subscribe((event) => {
-      if (event.type === "All" || event.type === "Admin" || (event.type === "User" && event.sessionId === session.id)) {
+      const isAdminAudience = event.audience.type === "All" || event.audience.type === "Admin" ||
+        (event.audience.type === "User" && event.audience.sessionId === session.id);
+      if (event.topic === "Quizz" && isAdminAudience) {
         queue = queue.then(async () => {
           await stream.writeSSE({
             data: <AdminLiveQuizz store={store} session={session} />,
+          });
+        });
+      }
+    });
+
+    await new Promise<void>((resolve) => {
+      stream.onAbort(() => {
+        unsub();
+        resolve();
+      });
+    });
+  });
+});
+
+app.get("/admin/stream/status", (c) => {
+  const session = c.get("session");
+  if (!session || !session.isAdmin) {
+    return c.text("Non autorise", 401);
+  }
+  return streamSSE(c, async (stream) => {
+    await stream.writeSSE({ data: <Status store={store} /> });
+
+    let queue = Promise.resolve();
+    const unsub = store.subscribe((event) => {
+      const isAdminAudience = event.audience.type === "All" || event.audience.type === "Admin";
+      if (event.topic === "Status" && isAdminAudience) {
+        queue = queue.then(async () => {
+          await stream.writeSSE({
+            data: <Status store={store} />,
           });
         });
       }

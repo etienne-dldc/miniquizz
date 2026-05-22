@@ -1,5 +1,5 @@
-import { Box, Button, css, Icon, SrOnly } from "@dldc/hono-ui";
-import { Fullscreen } from "lucide-static";
+import { Box, css } from "@dldc/hono-ui";
+import { FullscreenButton } from "../components/FullscreenButton.tsx";
 import { Layout } from "../components/Layout.tsx";
 import { UserLiveQuizz } from "../components/UserLiveQuizz.tsx";
 import { SessionProvider } from "../contexts/session.tsx";
@@ -21,17 +21,7 @@ export const HomePage = ({ session, store }: HomePageProps) => {
           title={doc.name}
           classList={css({ display: "grid", gridTemplateRows: "1fr" })}
           showLogoutButton
-          headerLeftContent={
-            <Button
-              variant="ghost"
-              size={12}
-              data-fullscreen
-              data-fullscreen-orientation="landscape"
-            >
-              <Icon icon={Fullscreen} />
-              <SrOnly>Plein ecran</SrOnly>
-            </Button>
-          }
+          headerLeftContent={<FullscreenButton />}
         >
           <Box hx-sse:connect="/stream" classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
             <UserLiveQuizz session={session} store={store} />
