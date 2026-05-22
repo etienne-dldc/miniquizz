@@ -12,6 +12,7 @@ import denoJson from "./deno.json" with { type: "json" };
 import { adminActionSchema } from "./logic/adminActionSchema.ts";
 import { SESSION_COOKIE_NAME, SESSIONS_STORAGE_KEY, STATE_STORAGE_KEY } from "./logic/constants.ts";
 import { appEnv } from "./logic/env.ts";
+import { createFileStorage } from "./logic/fileStorage.ts";
 import { createSessions } from "./logic/sessions.ts";
 import { createAppStore } from "./logic/store.ts";
 import { userActionSchema } from "./logic/userActionSchema.ts";
@@ -31,8 +32,9 @@ console.info(
   `OpenTelemetry ${appEnv.otel.denoEnabled ? "enabled" : "disabled"}`,
 );
 
-const store = await createAppStore(appEnv.dataFolderPath, STATE_STORAGE_KEY);
-const sessions = createSessions(SESSIONS_STORAGE_KEY);
+const storage = createFileStorage(appEnv.storageFolderPath);
+const store = await createAppStore(storage, appEnv.dataFolderPath, STATE_STORAGE_KEY);
+const sessions = createSessions(storage, SESSIONS_STORAGE_KEY);
 
 const app = new Hono();
 

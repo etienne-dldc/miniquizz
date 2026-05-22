@@ -10,7 +10,7 @@ export interface Sessions {
   delete(sessionId: string): void;
 }
 
-export function createSessions(storageKey: string): Sessions {
+export function createSessions(storage: Storage, storageKey: string): Sessions {
   const sessions = loadSessions();
 
   return {
@@ -31,7 +31,7 @@ export function createSessions(storageKey: string): Sessions {
   };
 
   function loadSessions(): Map<string, Session> {
-    const sessionsStr = localStorage.getItem(storageKey);
+    const sessionsStr = storage.getItem(storageKey);
     if (sessionsStr) {
       try {
         const sessionsObj = JSON.parse(sessionsStr);
@@ -41,7 +41,7 @@ export function createSessions(storageKey: string): Sessions {
           ) => [key, value as Session]),
         );
       } catch (e) {
-        console.error("Failed to parse sessions from localStorage", e);
+        console.error("Failed to parse sessions from storage", e);
       }
     }
     return new Map();
@@ -49,6 +49,6 @@ export function createSessions(storageKey: string): Sessions {
 
   function saveSessions(sessions: Map<string, Session>): void {
     const sessionsObj = Object.fromEntries(sessions);
-    localStorage.setItem(storageKey, JSON.stringify(sessionsObj));
+    storage.setItem(storageKey, JSON.stringify(sessionsObj));
   }
 }

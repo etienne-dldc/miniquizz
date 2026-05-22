@@ -4,6 +4,7 @@ export type AppEnv = {
   port: number;
   adminPassword: string;
   dataFolderPath: string;
+  storageFolderPath: string;
   otel: {
     denoEnabled: boolean;
     denoConsole: string | null;
@@ -59,6 +60,7 @@ export function readEnv(): AppEnv {
     port: parsePort(Deno.env.get("PORT")),
     adminPassword: requireString("ADMIN_PASSWORD"),
     dataFolderPath: requireString("DATA_FOLDER_PATH"),
+    storageFolderPath: requireString("STORAGE_FOLDER_PATH"),
     otel: {
       denoEnabled: parseFlag(Deno.env.get("OTEL_DENO")),
       denoConsole: nullable(Deno.env.get("OTEL_DENO_CONSOLE")),

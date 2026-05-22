@@ -1,4 +1,5 @@
 import { createSubscription, type SubscribeMethod } from "@dldc/pubsub";
+import { throttle } from "@std/async/unstable-throttle";
 import { resolve } from "@std/path";
 import type { AdminAction } from "./adminActionSchema.ts";
 import { type Block, type Doc, parseDoc, type Step } from "./parseDoc.ts";
@@ -55,15 +56,17 @@ export interface AppStore {
 }
 
 export async function createAppStore(
+  storage: Storage,
   dataPath: string,
   storageKey: string,
 ): Promise<AppStore> {
   await ensureDataFolder(dataPath);
   const doc = await parseDoc(resolve(dataPath, "data.doc.tsx"));
   const sub = createSubscription<AppEvent>();
-  let state: AppState = loadState(storageKey, doc);
+  let state: AppState = loadState(storage, storageKey, doc);
 
   const allProgress = computeAllProgress(state.doc);
+  const saveStateThrottled = throttle(saveState, 200);
 
   return {
     subscribe: sub.subscribe,
@@ -80,7 +83,7 @@ export async function createAppStore(
       state = createInitialAppState(state.doc);
       sub.emit({ audience: { type: "All" }, topic: "Quizz" });
       sub.emit({ audience: { type: "All" }, topic: "Status" });
-      saveState(state, storageKey);
+      saveStateThrottled();
       return;
     }
 
@@ -91,7 +94,7 @@ export async function createAppStore(
       state.state = "running";
       sub.emit({ audience: { type: "All" }, topic: "Quizz" });
       sub.emit({ audience: { type: "Admin" }, topic: "Status" });
-      saveState(state, storageKey);
+      saveStateThrottled();
       return;
     }
 
@@ -103,7 +106,7 @@ export async function createAppStore(
         return;
       }
       state.progress += 1;
-      saveState(state, storageKey);
+      saveStateThrottled();
       sub.emit({ audience: { type: "All" }, topic: "Quizz" });
       sub.emit({ audience: { type: "Admin" }, topic: "Status" });
       return;
@@ -117,7 +120,7 @@ export async function createAppStore(
         return;
       }
       state.progress -= 1;
-      saveState(state, storageKey);
+      saveStateThrottled();
       sub.emit({ audience: { type: "All" }, topic: "Quizz" });
       sub.emit({ audience: { type: "Admin" }, topic: "Status" });
       return;
@@ -140,7 +143,7 @@ export async function createAppStore(
         state.sessions.set(session.id, sessionState);
       }
       sessionState.votes.set(progress.questionIndex, action.optionValue);
-      saveState(state, storageKey);
+      saveStateThrottled();
       sub.emit({ audience: { type: "User", sessionId: session.id }, topic: "Quizz" });
       sub.emit({ audience: { type: "Admin" }, topic: "Status" });
       return;
@@ -155,7 +158,7 @@ export async function createAppStore(
       for (const sessionState of state.sessions.values()) {
         sessionState.votes.delete(questionIndex);
       }
-      saveState(state, storageKey);
+      saveStateThrottled();
       sub.emit({ audience: { type: "All" }, topic: "Quizz" });
       sub.emit({ audience: { type: "Admin" }, topic: "Status" });
       return;
@@ -203,13 +206,14 @@ export async function createAppStore(
     }, 0);
     return { totalUsers, totalVotes };
   }
-}
 
-function saveState(state: AppState, storageKey: string) {
-  try {
-    localStorage.setItem(storageKey, JSON.stringify(sanitize(state)));
-  } catch (err) {
-    console.error("Failed to save app state to localStorage", err);
+  function saveState() {
+    try {
+      const copy = { ...state, doc: undefined };
+      storage.setItem(storageKey, JSON.stringify(sanitize(copy)));
+    } catch (err) {
+      console.error("Failed to save app state to storage", err);
+    }
   }
 }
 
@@ -222,8 +226,8 @@ function createInitialAppState(doc: Doc): AppState {
   };
 }
 
-function loadState(storageKey: string, doc: Doc): AppState {
-  const data = localStorage.getItem(storageKey);
+function loadState(storage: Storage, storageKey: string, doc: Doc): AppState {
+  const data = storage.getItem(storageKey);
   if (!data) {
     return createInitialAppState(doc);
   }
@@ -231,7 +235,7 @@ function loadState(storageKey: string, doc: Doc): AppState {
     const restored = restore(JSON.parse(data)) as AppState;
     return { ...restored, doc: doc };
   } catch (err) {
-    console.error("Failed to parse app state from localStorage", err);
+    console.error("Failed to parse app state from storage", err);
     return createInitialAppState(doc);
   }
 }
