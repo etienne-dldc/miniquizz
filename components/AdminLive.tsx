@@ -24,7 +24,7 @@ export const AdminLive = ({ store, session }: AdminLiveProps) => {
             {...adminActionProps({ type: "Start" }, "Space")}
           >
             <Icon icon={Play} />
-            Start
+            Demarrer
           </Button>
         </Stack>
       </Box>

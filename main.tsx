@@ -55,15 +55,15 @@ app.use("*", cacheControlMiddleware);
 
 app.onError((err, c) => {
   console.error(err);
-  const message = err instanceof Error ? err.message : "An unexpected error occurred";
+  const message = err instanceof Error ? err.message : "Une erreur inattendue est survenue";
   const session = c.get("session");
 
   return c.html(
     <ErrorPage
-      title="Error"
+      title="Erreur"
       message={message}
       returnPath="/"
-      returnLabel="Back"
+      returnLabel="Retour"
       session={session}
     />,
     500,
@@ -106,7 +106,7 @@ app.post(
   sValidator(
     "form",
     v.object({
-      password: v.pipe(v.string(), v.nonEmpty("Password cannot be empty")),
+      password: v.pipe(v.string(), v.nonEmpty("Le mot de passe ne peut pas etre vide")),
     }),
   ),
   (c) => {
@@ -139,7 +139,7 @@ app.post(
   sValidator(
     "form",
     v.object({
-      name: v.pipe(v.string(), v.nonEmpty("Name cannot be empty")),
+      name: v.pipe(v.string(), v.nonEmpty("Le nom ne peut pas etre vide")),
     }),
   ),
   (c) => {
@@ -161,7 +161,7 @@ app.post("/logout", (c) => {
   }
   const isHtmx = c.req.header("HX-Request") === "true";
   if (isHtmx) {
-    return c.text("Logged out", 200, {
+    return c.text("Deconnexion effectuee", 200, {
       "HX-Redirect": "/",
     });
   }
@@ -173,7 +173,7 @@ app.post("/logout", (c) => {
 app.get("/stream", (c) => {
   const session = c.get("session");
   if (!session) {
-    return c.text("Unauthorized", 401);
+    return c.text("Non autorise", 401);
   }
   return streamSSE(c, async (stream) => {
     await stream.writeSSE({
@@ -206,7 +206,7 @@ app.get("/stream", (c) => {
 app.get("/admin/stream", (c) => {
   const session = c.get("session");
   if (!session || !session.isAdmin) {
-    return c.text("Unauthorized", 401);
+    return c.text("Non autorise", 401);
   }
   return streamSSE(c, async (stream) => {
     await stream.writeSSE({ data: <AdminLive store={store} session={session} /> });
@@ -234,7 +234,7 @@ app.get("/admin/stream", (c) => {
 app.post("/action", sValidator("form", userActionSchema), (c) => {
   const session = c.get("session");
   if (!session) {
-    return c.text("Unauthorized", 401);
+    return c.text("Non autorise", 401);
   }
   const action = c.req.valid("form");
   store.dispatch({ session, action });
@@ -244,7 +244,7 @@ app.post("/action", sValidator("form", userActionSchema), (c) => {
 app.post("/admin/action", sValidator("form", adminActionSchema), (c) => {
   const session = c.get("session");
   if (!session || !session.isAdmin) {
-    return c.text("Unauthorized", 401);
+    return c.text("Non autorise", 401);
   }
   const action = c.req.valid("form");
   store.dispatch({ session, action });

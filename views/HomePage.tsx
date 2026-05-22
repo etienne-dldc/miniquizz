@@ -29,7 +29,7 @@ export const HomePage = ({ session, store }: HomePageProps) => {
               data-fullscreen-orientation="landscape"
             >
               <Icon icon={Fullscreen} />
-              <SrOnly>Fullscreen</SrOnly>
+              <SrOnly>Plein ecran</SrOnly>
             </Button>
           }
         >

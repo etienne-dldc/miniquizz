@@ -10,15 +10,15 @@ export declare function Grid(props: { children: Node; columns?: string; rows?: s
 export declare function Box(props: { children: Node }): Element;
 
 <Config
-  name="Schema Coverage Quiz"
-  description="Test dataset covering all quizzSchema content block variants and multiple answer patterns."
+  name="Quiz de couverture du schema"
+  description="Jeu de donnees de test couvrant toutes les variantes de blocs de contenu de quizzSchema et plusieurs formats de reponse."
   ratio={1.5}
 />;
 
 <Step>
   <Grid rows="1fr 2fr">
     <Box>
-      <Text size={2}>What does HTML stand for?</Text>
+      <Text size={2}>Que signifie HTML ?</Text>
     </Box>
     <Grid rows="1fr 1fr" columns="1fr 1fr">
       <QuizzOption value="option1">
@@ -40,7 +40,7 @@ export declare function Box(props: { children: Node }): Element;
 <Step>
   <Grid rows="1fr 2fr">
     <Box>
-      <Text size={1.5}>Which JavaScript values are falsy?</Text>
+      <Text size={1.5}>Quelles valeurs JavaScript sont falsy ?</Text>
       <Code size={1.5}>
         {"if (value) { /* truthy */ }"}
       </Code>
@@ -65,7 +65,7 @@ export declare function Box(props: { children: Node }): Element;
 <Step>
   <Grid rows="1fr 1fr">
     <Box>
-      <Text size={1}>What will this TypeScript function return for n = 4?</Text>
+      <Text size={1}>Que retourne cette fonction TypeScript pour n = 4 ?</Text>
       <Code size={1}>
         {"function sumTo(n: number): number {\n  let sum = 0;\n  for (let i = 1; i <= n; i++) sum += i;\n  return sum;\n}"}
       </Code>
@@ -87,8 +87,8 @@ export declare function Box(props: { children: Node }): Element;
 <Step>
   <Grid rows="1.5fr 1fr">
     <Box>
-      <Text size={1}>Identify the logo shown in the image.</Text>
-      <Image src="/data/deno-logo.svg" alt="A circle logo with a dinosaur silhouette" size={6} />
+      <Text size={1}>Identifiez le logo affiche dans l'image.</Text>
+      <Image src="/data/deno-logo.svg" alt="Un logo circulaire avec une silhouette de dinosaure" size={6} />
     </Box>
     <Grid rows="1fr" columns="1fr 1fr 1fr">
       <QuizzOption value="option1">
@@ -107,7 +107,7 @@ export declare function Box(props: { children: Node }): Element;
 <Step>
   <Grid rows="1fr 2fr">
     <Box>
-      <Text size={2.5}>Select all valid HTTP methods from the list below.</Text>
+      <Text size={2.5}>Selectionnez toutes les methodes HTTP valides dans la liste ci-dessous.</Text>
     </Box>
     <Grid rows="1fr 1fr" columns="1fr 1fr">
       <QuizzOption value="option1" isCorrect>
@@ -129,7 +129,7 @@ export declare function Box(props: { children: Node }): Element;
 <Step>
   <Grid rows="1fr 2fr">
     <Box>
-      <Text>Pick the expression that creates an array with values 1, 2, 3 in JavaScript.</Text>
+      <Text>Choisissez l'expression qui cree un tableau contenant les valeurs 1, 2, 3 en JavaScript.</Text>
     </Box>
     <Grid rows="1fr" columns="1fr 1fr 1fr">
       <QuizzOption value="option1" isCorrect>

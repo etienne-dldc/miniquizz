@@ -8,10 +8,10 @@ export const LogoutButton = () => {
       size={12}
       hx-post="/logout"
       hx-swap="none"
-      hx-confirm="Are you sure you want to logout?"
+      hx-confirm="Etes-vous sur de vouloir vous deconnecter ?"
     >
       <Icon icon={LogOut} />
-      <SrOnly>Logout</SrOnly>
+      <SrOnly>Deconnexion</SrOnly>
     </Button>
   );
 };

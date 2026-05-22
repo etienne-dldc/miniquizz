@@ -23,10 +23,10 @@ const linkClass = css({
 });
 
 export const ErrorPage: FC<ErrorPageProps> = ({
-  title = "Error",
+  title = "Erreur",
   message,
   returnPath = "/",
-  returnLabel = "Back",
+  returnLabel = "Retour",
   session,
 }) => {
   return (

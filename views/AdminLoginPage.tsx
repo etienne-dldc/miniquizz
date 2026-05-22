@@ -20,7 +20,7 @@ export const AdminLoginPage: FC<AdminLoginPageProps> = (
         render={<form method="post" action="/admin" />}
       >
         <Typography fontSize="2xl" fontWeight="bold" render="h2">
-          Admin access
+          Acces administrateur
         </Typography>
         <InlineGroup classList={css({ display: "grid", gridTemplateColumns: "1fr auto" })}>
           <Input
@@ -29,7 +29,7 @@ export const AdminLoginPage: FC<AdminLoginPageProps> = (
             name="password"
             required
             style={{ width: "100%" }}
-            placeholder="Enter admin password"
+            placeholder="Entrez le mot de passe administrateur"
             size={14}
           />
           <Button type="submit" variant="primary" size={14}>
@@ -39,7 +39,7 @@ export const AdminLoginPage: FC<AdminLoginPageProps> = (
         </InlineGroup>
         {invalidPassword && (
           <Typography color="red-500" fontSize="base">
-            The password you entered is incorrect. Please try again.
+            Le mot de passe saisi est incorrect. Veuillez reessayer.
           </Typography>
         )}
       </Stack>

@@ -19,7 +19,7 @@ export const UserLive = (
         <Stack flexDirection="column" alignItems="center" gap={5} classList={css({ minWidth: "[min(100vw - 2rem, 30rem)]" })}>
           <Icon icon={Timer} size={30} />
           <Typography fontSize="2xl" fontWeight="bold" classList={css({ textAlign: "center" })}>
-            Waiting for the quiz to start...
+            En attente du demarrage du quiz...
           </Typography>
         </Stack>
       </Box>

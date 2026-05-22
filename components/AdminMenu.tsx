@@ -28,19 +28,19 @@ export const AdminMenu: FC = () => {
         })}
       >
         <Icon icon={Menu} />
-        <SrOnly>Admin Menu</SrOnly>
+        <SrOnly>Menu administrateur</SrOnly>
       </Button>
 
       <div id="admin-menu" popover="auto" class={popoverStyle}>
         <Paper flexDirection="column" gap={2} padding={4} classList={css({ minWidth: 100, borderRadius: 6 })}>
-          <Button {...adminActionProps({ type: "Reset" })} hx-confirm="Reset the quiz? This action cannot be undone.">
-            Reset Quiz
+          <Button {...adminActionProps({ type: "Reset" })} hx-confirm="Reinitialiser le quiz ? Cette action est irreversible.">
+            Reinitialiser le quiz
           </Button>
           <Button {...adminActionProps({ type: "Prev" }, "ArrowLeft")}>
-            Prev
+            Precedent
           </Button>
           <Button {...adminActionProps({ type: "Next" }, "ArrowRight")}>
-            Next
+            Suivant
           </Button>
         </Paper>
       </div>
