@@ -1,92 +1,81 @@
 import { isDocElement, parse as parseTsxDoc } from "@dldc/tsx-doc";
 import * as v from "@valibot/valibot";
+import {
+  ALL_FONT_FAMILIES,
+  ALL_FONT_STYLES,
+  ALL_FONT_WEIGHTS,
+  ALL_TEXT_DECORATIONS,
+  type AppearProps,
+  type BoxProps,
+  type CodeProps,
+  type ConfigProps,
+  type GridProps,
+  type ImageProps,
+  type LinkProps,
+  type QuizzOptionProps,
+  type SpanProps,
+  type TextProps,
+} from "./tsx.ts";
 
-const ALL_FONT_WEIGHTS = ["thin", "extraLight", "light", "normal", "medium", "semibold", "bold", "extraBold", "black"] as const;
-const ALL_TEXT_DECORATIONS = ["underline", "overline", "lineThrough"] as const;
-const ALL_FONT_FAMILIES = ["sans", "serif", "mono"] as const;
+type WithoutChildren<T> = Omit<T, "children">;
 
 export interface InlineBlock_Br {
   type: "Br";
 }
 
-export interface InlineBlock_Span {
+export type InlineBlock_Span = WithoutChildren<SpanProps> & {
   type: "Span";
   inline: InlineBlocks;
-  fontWeight?: (typeof ALL_FONT_WEIGHTS)[number];
-  textDecoration?: (typeof ALL_TEXT_DECORATIONS)[number];
-  fontFamily?: (typeof ALL_FONT_FAMILIES)[number];
-}
+};
 
-export interface InlineBlock_Link {
+export type InlineBlock_Link = WithoutChildren<LinkProps> & {
   type: "Link";
   inline: InlineBlocks;
-  href: string;
-  openInNewTab?: boolean;
-}
+};
 
 export type InlineBlock = string | InlineBlock_Br | InlineBlock_Span | InlineBlock_Link;
 export type InlineBlocks = InlineBlock[];
 
-export interface Block_Text {
+export type Block_Text = WithoutChildren<TextProps> & {
   type: "Text";
   inline: InlineBlocks;
-  size: number;
-  centered?: boolean;
-  fontWeight?: (typeof ALL_FONT_WEIGHTS)[number];
-  textDecoration?: (typeof ALL_TEXT_DECORATIONS)[number];
-  fontFamily?: (typeof ALL_FONT_FAMILIES)[number];
-}
+};
 
-export interface Block_Code {
+export type Block_Code = WithoutChildren<CodeProps> & {
   type: "Code";
   code: string | string[];
-  size: number;
-  wrapSize?: number;
-  language?: string;
-}
+};
 
-export interface Block_Image {
+export type Block_Image = ImageProps & {
   type: "Image";
-  src: string;
-  alt: string;
-  size: number;
-}
+};
 
-export interface Block_QuizzOption {
+export type Block_QuizzOption = WithoutChildren<QuizzOptionProps> & {
   type: "QuizzOption";
   children: Block[];
-  value: string;
-  isCorrect?: boolean;
-}
+};
 
-export interface Block_Grid {
+export type Block_Grid = WithoutChildren<GridProps> & {
   type: "Grid";
   children: Block[];
-  columns?: string;
-  rows?: string;
-  gap?: number;
-}
+};
 
-export interface Block_Box {
+export type Block_Box = WithoutChildren<BoxProps> & {
   type: "Box";
   children: Block[];
-  gap?: number;
-}
+};
 
-export interface Block_Appear {
+export type Block_Appear = Omit<AppearProps, "children" | "offset"> & {
   type: "Appear";
   children: Block[];
   offset: number;
-}
+};
 
 export type Block = Block_Text | Block_Code | Block_Image | Block_QuizzOption | Block_Grid | Block_Box | Block_Appear;
 
-export interface Doc {
-  name: string;
-  description: string;
-  ratio: number;
+export type Doc = ConfigProps & {
   steps: Step[];
-}
+};
 
 export interface Step {
   blocks: Block[];
@@ -105,6 +94,7 @@ const blockTextAttrSchema = v.object({
   fontWeight: v.optional(v.picklist(ALL_FONT_WEIGHTS)),
   textDecoration: v.optional(v.picklist(ALL_TEXT_DECORATIONS)),
   fontFamily: v.optional(v.picklist(ALL_FONT_FAMILIES)),
+  fontStyle: v.optional(v.picklist(ALL_FONT_STYLES)),
 });
 
 const blockCodeAttrSchema = v.object({
@@ -142,6 +132,7 @@ const inlineBlockSpanAttrSchema = v.object({
   fontWeight: v.optional(v.picklist(ALL_FONT_WEIGHTS)),
   textDecoration: v.optional(v.picklist(ALL_TEXT_DECORATIONS)),
   fontFamily: v.optional(v.picklist(ALL_FONT_FAMILIES)),
+  fontStyle: v.optional(v.picklist(ALL_FONT_STYLES)),
 });
 
 const inlineBlockLinkAttrSchema = v.object({

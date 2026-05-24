@@ -1,4 +1,4 @@
-import { Box, css } from "@dldc/hono-ui";
+import { css } from "@dldc/hono-ui";
 import type { InlineBlock_Link } from "../../logic/parseDoc.ts";
 import { InlineBlockDisplay } from "./InlineBlockDisplay.tsx";
 
@@ -8,11 +8,12 @@ interface InlineBlockLinkDisplayProps {
 
 export function InlineBlockLinkDisplay({ inlineBlock }: InlineBlockLinkDisplayProps) {
   return (
-    <Box
-      render={<a href={inlineBlock.href} target={inlineBlock.openInNewTab ? "_blank" : undefined} />}
-      classList={css({})}
+    <a
+      href={inlineBlock.href}
+      target={inlineBlock.openInNewTab ? "_blank" : undefined}
+      class={css({ textDecoration: "underline", color: "blue-400" })}
     >
       {inlineBlock.inline.map((child, index) => <InlineBlockDisplay key={index} inlineBlock={child} />)}
-    </Box>
+    </a>
   );
 }
