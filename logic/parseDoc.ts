@@ -33,7 +33,12 @@ export type InlineBlock_Link = WithoutChildren<LinkProps> & {
   inline: InlineBlocks;
 };
 
-export type InlineBlock = string | InlineBlock_Br | InlineBlock_Span | InlineBlock_Link;
+export type InlineBlock_InlineCode = {
+  type: "InlineCode";
+  content: string | string[];
+};
+
+export type InlineBlock = string | InlineBlock_Br | InlineBlock_Span | InlineBlock_Link | InlineBlock_InlineCode;
 export type InlineBlocks = InlineBlock[];
 
 export type Block_Text = WithoutChildren<TextProps> & {
@@ -310,6 +315,13 @@ function parseChildrenToInlineBlock(children: unknown): InlineBlock {
     const attrs = v.parse(inlineBlockLinkAttrSchema, children.attributes ?? {});
     const inline = parseChildrensToInlineBlocks(children.children);
     return { type: "Link", inline, ...attrs };
+  }
+  if (children.name === "InlineCode") {
+    if (children.attributes) {
+      throw new Error("InlineCode element cannot have attributes");
+    }
+    const content = parseTextChildren(children.children);
+    return { type: "InlineCode", content };
   }
   throw new Error(`Unknown element: ${children.name}`);
 }

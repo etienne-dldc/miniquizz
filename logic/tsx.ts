@@ -46,4 +46,6 @@ export type SpanProps = {
 export declare function Span(props: SpanProps): Element;
 export type LinkProps = { children: Node; href: string; openInNewTab?: boolean };
 export declare function Link(props: LinkProps): Element;
+export type InlineCodeProps = { children: Node };
+export declare function InlineCode(props: InlineCodeProps): Element;
 export declare function Br(): Element;

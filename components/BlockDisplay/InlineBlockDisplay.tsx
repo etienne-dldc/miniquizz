@@ -1,4 +1,5 @@
 import type { InlineBlock } from "../../logic/parseDoc.ts";
+import { InlineBlockInlineCodeDisplay } from "./InlineBlockInlineCodeDisplay.tsx";
 import { InlineBlockLinkDisplay } from "./InlineBlockLinkDisplay.tsx";
 import { InlineBlockSpanDisplay } from "./InlineBlockSpanDisplay.tsx";
 
@@ -16,6 +17,9 @@ export function InlineBlockDisplay({ inlineBlock }: InlineBlockDisplayProps) {
     }
     case "Link": {
       return <InlineBlockLinkDisplay inlineBlock={inlineBlock} />;
+    }
+    case "InlineCode": {
+      return <InlineBlockInlineCodeDisplay inlineBlock={inlineBlock} />;
     }
     case "Br": {
       return <br />;

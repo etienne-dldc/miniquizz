@@ -14,6 +14,7 @@ export function InlineBlockSpanDisplay({ inlineBlock }: InlineBlockSpanDisplayPr
         fontWeight: inlineBlock.fontWeight,
         textDecoration: inlineBlock.textDecoration,
         fontFamily: inlineBlock.fontFamily,
+        fontStyle: inlineBlock.fontStyle,
       })}
     >
       {inlineBlock.inline.map((child, index) => <InlineBlockDisplay key={index} inlineBlock={child} />)}
