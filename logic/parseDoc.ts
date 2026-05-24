@@ -1,11 +1,40 @@
 import { isDocElement, parse as parseTsxDoc } from "@dldc/tsx-doc";
 import * as v from "@valibot/valibot";
 
+const ALL_FONT_WEIGHTS = ["thin", "extraLight", "light", "normal", "medium", "semibold", "bold", "extraBold", "black"] as const;
+const ALL_TEXT_DECORATIONS = ["underline", "overline", "lineThrough"] as const;
+const ALL_FONT_FAMILIES = ["sans", "serif", "mono"] as const;
+
+export interface InlineBlock_Br {
+  type: "Br";
+}
+
+export interface InlineBlock_Span {
+  type: "Span";
+  inline: InlineBlocks;
+  fontWeight?: (typeof ALL_FONT_WEIGHTS)[number];
+  textDecoration?: (typeof ALL_TEXT_DECORATIONS)[number];
+  fontFamily?: (typeof ALL_FONT_FAMILIES)[number];
+}
+
+export interface InlineBlock_Link {
+  type: "Link";
+  inline: InlineBlocks;
+  href: string;
+  openInNewTab?: boolean;
+}
+
+export type InlineBlock = string | InlineBlock_Br | InlineBlock_Span | InlineBlock_Link;
+export type InlineBlocks = InlineBlock[];
+
 export interface Block_Text {
   type: "Text";
-  text: string | string[];
+  inline: InlineBlocks;
   size: number;
   centered?: boolean;
+  fontWeight?: (typeof ALL_FONT_WEIGHTS)[number];
+  textDecoration?: (typeof ALL_TEXT_DECORATIONS)[number];
+  fontFamily?: (typeof ALL_FONT_FAMILIES)[number];
 }
 
 export interface Block_Code {
@@ -73,6 +102,9 @@ const configAttrSchema = v.object({
 const blockTextAttrSchema = v.object({
   size: v.optional(v.pipe(v.number(), v.minValue(0)), 1),
   centered: v.optional(v.boolean(), true),
+  fontWeight: v.optional(v.picklist(ALL_FONT_WEIGHTS)),
+  textDecoration: v.optional(v.picklist(ALL_TEXT_DECORATIONS)),
+  fontFamily: v.optional(v.picklist(ALL_FONT_FAMILIES)),
 });
 
 const blockCodeAttrSchema = v.object({
@@ -104,6 +136,17 @@ const blockBoxAttrSchema = v.object({
 
 const blockAppearAttrSchema = v.object({
   offset: v.optional(v.pipe(v.number(), v.minValue(0))),
+});
+
+const inlineBlockSpanAttrSchema = v.object({
+  fontWeight: v.optional(v.picklist(ALL_FONT_WEIGHTS)),
+  textDecoration: v.optional(v.picklist(ALL_TEXT_DECORATIONS)),
+  fontFamily: v.optional(v.picklist(ALL_FONT_FAMILIES)),
+});
+
+const inlineBlockLinkAttrSchema = v.object({
+  href: v.string(),
+  openInNewTab: v.optional(v.boolean(), false),
 });
 
 export async function parseDoc(path: string): Promise<Doc> {
@@ -194,9 +237,9 @@ function parseChildrenToBlock(children: unknown, options: { allowQuizzOption: bo
     throw new Error("Unexpected node: only elements are allowed");
   }
   if (children.name === "Text") {
-    const text = parseTextChildren(children.children);
+    const inline = parseChildrensToInlineBlocks(children.children);
     const attrs = v.parse(blockTextAttrSchema, children.attributes ?? {});
-    return { type: "Text", text, ...attrs };
+    return { type: "Text", inline, ...attrs };
   }
   if (children.name === "Code") {
     const code = parseTextChildren(children.children);
@@ -233,6 +276,49 @@ function parseChildrenToBlock(children: unknown, options: { allowQuizzOption: bo
     const blocks = parseChildrensToBlocks(children.children, options);
     const offset = options.appearStore.add(attrs.offset);
     return { type: "Appear", children: blocks, offset };
+  }
+  throw new Error(`Unknown element: ${children.name}`);
+}
+
+function parseChildrensToInlineBlocks(children: unknown[] | undefined): InlineBlocks {
+  if (!children) {
+    return [];
+  }
+  const inlineBlocks: InlineBlocks = [];
+  for (const child of children) {
+    const inlineBlock = parseChildrenToInlineBlock(child);
+    if (inlineBlock) {
+      inlineBlocks.push(inlineBlock);
+    }
+  }
+  return inlineBlocks;
+}
+
+function parseChildrenToInlineBlock(children: unknown): InlineBlock {
+  if (typeof children === "string") {
+    return children;
+  }
+  if (!isDocElement(children)) {
+    throw new Error("Unexpected node: only text or elements are allowed inside Text elements");
+  }
+  if (children.name === "Br") {
+    if (children.children) {
+      throw new Error("Br element cannot have children");
+    }
+    if (children.attributes) {
+      throw new Error("Br element cannot have attributes");
+    }
+    return { type: "Br" };
+  }
+  if (children.name === "Span") {
+    const attrs = v.parse(inlineBlockSpanAttrSchema, children.attributes ?? {});
+    const inline = parseChildrensToInlineBlocks(children.children);
+    return { type: "Span", inline, ...attrs };
+  }
+  if (children.name === "Link") {
+    const attrs = v.parse(inlineBlockLinkAttrSchema, children.attributes ?? {});
+    const inline = parseChildrensToInlineBlocks(children.children);
+    return { type: "Link", inline, ...attrs };
   }
   throw new Error(`Unknown element: ${children.name}`);
 }
