@@ -25,8 +25,16 @@ export type AppSessionState = {
 export type Options = { value: string; isCorrect: boolean }[];
 
 export type AppProgress =
-  | { type: "question"; stepIndex: number; questionIndex: number; phase: "question" | "answer"; options: Options; step: Step }
-  | { type: "slide"; stepIndex: number; step: Step };
+  | {
+    type: "question";
+    stepIndex: number;
+    appearOffset: number;
+    questionIndex: number;
+    phase: "question" | "answer";
+    options: Options;
+    step: Step;
+  }
+  | { type: "slide"; stepIndex: number; appearOffset: number; step: Step };
 
 export interface AppState {
   state: "running" | "idle";
@@ -405,13 +413,17 @@ function computeAllProgress(doc: Doc): AppProgress[] {
   let questionIndex = 0;
   doc.steps.forEach((step, index) => {
     const options = extractOptions(step);
-    if (options.length === 0) {
-      steps.push({ stepIndex: index, type: "slide", step });
-      return;
+    const base: AppProgress = options.length === 0
+      ? { stepIndex: index, appearOffset: 0, type: "slide", step }
+      : { stepIndex: index, appearOffset: 0, type: "question", questionIndex, options, phase: "question", step };
+    steps.push(base);
+    for (let appearOffset = 1; appearOffset <= step.maxAppearOffset; appearOffset++) {
+      steps.push({ ...base, appearOffset });
     }
-    steps.push({ stepIndex: index, type: "question", questionIndex, options, phase: "question", step });
-    steps.push({ stepIndex: index, type: "question", questionIndex, options, phase: "answer", step });
-    questionIndex++;
+    if (options.length > 0) {
+      steps.push({ stepIndex: index, type: "question", appearOffset: step.maxAppearOffset, questionIndex, options, phase: "answer", step });
+      questionIndex++;
+    }
   });
   return steps;
 }

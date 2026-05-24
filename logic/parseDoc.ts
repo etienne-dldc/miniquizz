@@ -13,6 +13,7 @@ export interface Block_Code {
   code: string | string[];
   size: number;
   wrapSize?: number;
+  language?: string;
 }
 
 export interface Block_Image {
@@ -40,9 +41,16 @@ export interface Block_Grid {
 export interface Block_Box {
   type: "Box";
   children: Block[];
+  gap?: number;
 }
 
-export type Block = Block_Text | Block_Code | Block_Image | Block_QuizzOption | Block_Grid | Block_Box;
+export interface Block_Appear {
+  type: "Appear";
+  children: Block[];
+  offset: number;
+}
+
+export type Block = Block_Text | Block_Code | Block_Image | Block_QuizzOption | Block_Grid | Block_Box | Block_Appear;
 
 export interface Doc {
   name: string;
@@ -53,6 +61,7 @@ export interface Doc {
 
 export interface Step {
   blocks: Block[];
+  maxAppearOffset: number;
 }
 
 const configAttrSchema = v.object({
@@ -69,6 +78,7 @@ const blockTextAttrSchema = v.object({
 const blockCodeAttrSchema = v.object({
   size: v.optional(v.pipe(v.number(), v.minValue(0)), 1),
   wrapSize: v.optional(v.pipe(v.number(), v.minValue(0))),
+  language: v.optional(v.string()),
 });
 
 const blockImageAttrSchema = v.object({
@@ -86,6 +96,14 @@ const blockGridAttrSchema = v.object({
   columns: v.optional(v.string()),
   rows: v.optional(v.string()),
   gap: v.optional(v.pipe(v.number(), v.minValue(0)), 5),
+});
+
+const blockBoxAttrSchema = v.object({
+  gap: v.optional(v.pipe(v.number(), v.minValue(0))),
+});
+
+const blockAppearAttrSchema = v.object({
+  offset: v.optional(v.pipe(v.number(), v.minValue(0))),
 });
 
 export async function parseDoc(path: string): Promise<Doc> {
@@ -145,15 +163,19 @@ function parseRootBlock(
     if (element.attributes) {
       throw new Error("Step element cannot have attributes");
     }
-    const blocks = parseChildrensToBlocks(element.children, { allowQuizzOption: true });
-    return { kind: "step", step: { blocks } };
+    const appearStore = createAppearStore();
+    const blocks = parseChildrensToBlocks(element.children, { allowQuizzOption: true, appearStore });
+    return { kind: "step", step: { blocks, maxAppearOffset: appearStore.getMaxOffset() } };
   }
   throw new Error(
     `Unexpected element ${element.name} in doc`,
   );
 }
 
-function parseChildrensToBlocks(children: unknown[] | undefined, options: { allowQuizzOption: boolean }): Block[] {
+function parseChildrensToBlocks(
+  children: unknown[] | undefined,
+  options: { allowQuizzOption: boolean; appearStore: AppearStore },
+): Block[] {
   if (!children) {
     return [];
   }
@@ -167,7 +189,7 @@ function parseChildrensToBlocks(children: unknown[] | undefined, options: { allo
   return blocks;
 }
 
-function parseChildrenToBlock(children: unknown, options: { allowQuizzOption: boolean }): Block | null {
+function parseChildrenToBlock(children: unknown, options: { allowQuizzOption: boolean; appearStore: AppearStore }): Block | null {
   if (!isDocElement(children)) {
     throw new Error("Unexpected node: only elements are allowed");
   }
@@ -193,7 +215,7 @@ function parseChildrenToBlock(children: unknown, options: { allowQuizzOption: bo
       throw new Error("Invalid nested QuizzOption element: QuizzOption elements cannot be nested inside other QuizzOption elements");
     }
     const attrs = v.parse(blockQuizzOptionAttrSchema, children.attributes ?? {});
-    const blocks = parseChildrensToBlocks(children.children, { allowQuizzOption: false });
+    const blocks = parseChildrensToBlocks(children.children, { allowQuizzOption: false, appearStore: options.appearStore });
     return { type: "QuizzOption", children: blocks, ...attrs };
   }
   if (children.name === "Grid") {
@@ -202,11 +224,15 @@ function parseChildrenToBlock(children: unknown, options: { allowQuizzOption: bo
     return { type: "Grid", children: blocks, ...attrs };
   }
   if (children.name === "Box") {
-    if (children.attributes) {
-      throw new Error("Box element cannot have attributes");
-    }
+    const attrs = v.parse(blockBoxAttrSchema, children.attributes ?? {});
     const blocks = parseChildrensToBlocks(children.children, options);
-    return { type: "Box", children: blocks };
+    return { type: "Box", children: blocks, ...attrs };
+  }
+  if (children.name === "Appear") {
+    const attrs = v.parse(blockAppearAttrSchema, children.attributes ?? {});
+    const blocks = parseChildrensToBlocks(children.children, options);
+    const offset = options.appearStore.add(attrs.offset);
+    return { type: "Appear", children: blocks, offset };
   }
   throw new Error(`Unknown element: ${children.name}`);
 }
@@ -230,4 +256,26 @@ function parseTextChildren(children: unknown[] | undefined): string | string[] {
     return texts[0];
   }
   return texts;
+}
+
+interface AppearStore {
+  add(offset?: number): number;
+  getMaxOffset(): number;
+}
+
+function createAppearStore(): AppearStore {
+  let currentOffset = 0;
+  return {
+    add(offset) {
+      if (offset === undefined) {
+        currentOffset++;
+        return currentOffset;
+      }
+      currentOffset = Math.max(currentOffset, offset);
+      return offset;
+    },
+    getMaxOffset() {
+      return currentOffset;
+    },
+  };
 }

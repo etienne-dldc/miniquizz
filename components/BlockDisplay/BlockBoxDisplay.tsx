@@ -8,7 +8,7 @@ interface BlockBoxDisplayProps {
 
 export function BlockBoxDisplay({ block }: BlockBoxDisplayProps) {
   return (
-    <Stack flexDirection="column" gap={4} alignItems="center" justifyContent="center">
+    <Stack flexDirection="column" gap={block.gap ?? 4} alignItems="center" justifyContent="center">
       {block.children.map((child, index) => <BlockDisplay key={index} block={child} />)}
     </Stack>
   );

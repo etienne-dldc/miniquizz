@@ -1,4 +1,5 @@
 import type { Block } from "../logic/parseDoc.ts";
+import { BlockAppearDisplay } from "./BlockDisplay/BlockAppearDisplay.tsx";
 import { BlockBoxDisplay } from "./BlockDisplay/BlockBoxDisplay.tsx";
 import { BlockCodeDisplay } from "./BlockDisplay/BlockCodeDisplay.tsx";
 import { BlockGridDisplay } from "./BlockDisplay/BlockGridDisplay.tsx";
@@ -24,6 +25,8 @@ export function BlockDisplay({ block }: BlockDisplayProps) {
       return <BlockGridDisplay block={block} />;
     case "Box":
       return <BlockBoxDisplay block={block} />;
+    case "Appear":
+      return <BlockAppearDisplay block={block} />;
     default: {
       block satisfies never;
       return null;

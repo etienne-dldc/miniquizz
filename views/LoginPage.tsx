@@ -1,4 +1,4 @@
-import { Box, Button, css, Icon, InlineGroup, Input, SrOnly } from "@dldc/hono-ui";
+import { Box, Button, css, Icon, InlineGroup, Input, Label, SrOnly } from "@dldc/hono-ui";
 import { ArrowRight } from "lucide-static";
 import { Layout } from "../components/Layout.tsx";
 
@@ -10,7 +10,10 @@ export const LoginPage = ({ title }: LoginPageProps) => {
   return (
     <Layout title={title} classList={css({ display: "grid", placeItems: "center" })} showLogoutButton={false}>
       <Box classList={css({ minWidth: "[min(100vw - 2rem, 30rem)]" })}>
-        <form method="post" action="/login">
+        <form method="post" action="/login" class={css({ display: "grid", gap: 2 })}>
+          <Label htmlFor="login-name">
+            Entrez votre nom
+          </Label>
           <InlineGroup classList={css({ display: "grid", gridTemplateColumns: "1fr auto" })}>
             <Input
               id="login-name"

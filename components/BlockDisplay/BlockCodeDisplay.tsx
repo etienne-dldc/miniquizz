@@ -25,7 +25,7 @@ export async function BlockCodeDisplay({ block }: BlockCodeDisplayProps) {
   }
 
   const codeHtml = await codeToHtml(codeLines.join("\n"), {
-    lang: "typescript",
+    lang: block.language ?? "typescript",
     theme: "github-dark",
     rootStyle: "background-color: transparent;",
   });
