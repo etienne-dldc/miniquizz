@@ -48,6 +48,12 @@ export interface CurrentSessionState {
   voteValue: string | null;
 }
 
+export interface SessionResults {
+  correct: number;
+  wrong: number;
+  skipped: number;
+}
+
 export interface CurrentQuestionStats {
   totalUsers: number;
   totalVotes: number;
@@ -61,6 +67,7 @@ export interface AppStore {
   getCurrentProgress: () => AppProgress;
   getCurrentSessionState: (sessionId: string) => CurrentSessionState | null;
   getCurrentQuestionStats: () => CurrentQuestionStats;
+  getSessionResults: (sessionId: string) => SessionResults | null;
   dispose: () => Promise<void>;
 }
 
@@ -92,6 +99,7 @@ export async function createAppStore(
     getCurrentProgress,
     getCurrentSessionState,
     getCurrentQuestionStats,
+    getSessionResults,
     dispose,
   };
 
@@ -313,6 +321,43 @@ export async function createAppStore(
       return acc;
     }, 0);
     return { totalUsers, totalVotes };
+  }
+
+  function getSessionResults(sessionId: string): SessionResults | null {
+    const sessionState = state.sessions.get(sessionId);
+    if (!sessionState) {
+      return null;
+    }
+    const seensQuestion = new Set<number>();
+    let correct = 0;
+    let wrong = 0;
+    let skipped = 0;
+    for (let i = 0; i < state.progress; i++) {
+      const progressItem = allProgress[i];
+      if (progressItem.type !== "question") {
+        continue;
+      }
+      if (seensQuestion.has(progressItem.questionIndex)) {
+        continue;
+      }
+      seensQuestion.add(progressItem.questionIndex);
+      const vote = sessionState.votes.get(progressItem.questionIndex);
+      if (vote === undefined) {
+        skipped++;
+        continue;
+      }
+      const option = progressItem.options.find((option) => option.value === vote);
+      if (!option) {
+        skipped++;
+        continue;
+      }
+      if (option.isCorrect) {
+        correct++;
+      } else {
+        wrong++;
+      }
+    }
+    return { correct, wrong, skipped };
   }
 
   function saveState() {
