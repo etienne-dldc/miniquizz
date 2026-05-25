@@ -33,8 +33,8 @@ console.info(
 );
 
 const storage = createFileStorage(appEnv.storageFolderPath);
-const store = await createAppStore(storage, appEnv.dataFolderPath, STATE_STORAGE_KEY);
 const sessions = createSessions(storage, SESSIONS_STORAGE_KEY);
+const store = await createAppStore(storage, appEnv.dataFolderPath, STATE_STORAGE_KEY, sessions);
 
 const app = new Hono();
 

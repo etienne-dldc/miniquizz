@@ -3,7 +3,7 @@ import { Play } from "lucide-static";
 import { adminActionProps } from "../logic/actionProps.ts";
 import type { Session } from "../logic/sessions.ts";
 import type { AppStore } from "../logic/store.ts";
-import { DocStep } from "./DocStep.tsx";
+import { DocSlide } from "./DocSlide.tsx";
 
 interface AdminLiveQuizzProps {
   store: AppStore;
@@ -32,7 +32,7 @@ export const AdminLiveQuizz = ({ store, session }: AdminLiveQuizzProps) => {
   state.state satisfies "running";
   return (
     <Box classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
-      <DocStep store={store} session={session} />
+      <DocSlide store={store} session={session} />
     </Box>
   );
 };

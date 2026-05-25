@@ -79,13 +79,20 @@ export type Block_Appear = Omit<AppearProps, "children" | "offset"> & {
 export type Block = Block_Text | Block_Code | Block_Image | Block_QuizzOption | Block_Grid | Block_Box | Block_Appear;
 
 export type Doc = ConfigProps & {
-  steps: Step[];
+  slides: Slide[];
 };
 
 export interface Step {
+  kind: "Step";
   blocks: Block[];
   maxAppearOffset: number;
 }
+
+export interface Leaderboard {
+  kind: "Leaderboard";
+}
+
+export type Slide = Step | Leaderboard;
 
 const configAttrSchema = v.object({
   name: v.string(),
@@ -150,7 +157,7 @@ export async function parseDoc(path: string): Promise<Doc> {
     const content = await Deno.readTextFile(path);
     const docBase = parseTsxDoc(content);
     let config: { name: string; description: string; ratio: number } | null = null;
-    const steps: Step[] = [];
+    const slides: Slide[] = [];
     for (const child of docBase.children) {
       const parsed = parseRootBlock(child);
       if (parsed.kind === "config") {
@@ -161,7 +168,11 @@ export async function parseDoc(path: string): Promise<Doc> {
         continue;
       }
       if (parsed.kind === "step") {
-        steps.push(parsed.step);
+        slides.push(parsed.step);
+        continue;
+      }
+      if (parsed.kind === "leaderboard") {
+        slides.push({ kind: "Leaderboard" });
         continue;
       }
       parsed satisfies never;
@@ -169,14 +180,14 @@ export async function parseDoc(path: string): Promise<Doc> {
     if (config === null) {
       throw new Error("No Config element found in doc");
     }
-    if (steps.length === 0) {
+    if (slides.length === 0) {
       throw new Error("No Step element found in doc, at least one is required");
     }
     return {
       name: config.name,
       description: config.description,
       ratio: config.ratio,
-      steps,
+      slides,
     };
   } catch (err) {
     throw new Error(`Failed to read or parse doc file at ${path}`, {
@@ -185,9 +196,13 @@ export async function parseDoc(path: string): Promise<Doc> {
   }
 }
 
+type RootBlock = { kind: "step"; step: Step } | { kind: "config"; config: v.InferOutput<typeof configAttrSchema> } | {
+  kind: "leaderboard";
+};
+
 function parseRootBlock(
   element: unknown,
-): { kind: "step"; step: Step } | { kind: "config"; config: v.InferOutput<typeof configAttrSchema> } {
+): RootBlock {
   if (!isDocElement(element)) {
     throw new Error("Unexpected text node in doc, only Config and Step elements are allowed at the top level");
   }
@@ -204,7 +219,16 @@ function parseRootBlock(
     }
     const appearStore = createAppearStore();
     const blocks = parseChildrensToBlocks(element.children, { allowQuizzOption: true, appearStore });
-    return { kind: "step", step: { blocks, maxAppearOffset: appearStore.getMaxOffset() } };
+    return { kind: "step", step: { kind: "Step", blocks, maxAppearOffset: appearStore.getMaxOffset() } };
+  }
+  if (element.name === "Leaderboard") {
+    if (element.attributes) {
+      throw new Error("Leaderboard element cannot have attributes");
+    }
+    if (element.children) {
+      throw new Error("Leaderboard element cannot have children");
+    }
+    return { kind: "leaderboard" };
   }
   throw new Error(
     `Unexpected element ${element.name} in doc`,

@@ -2,7 +2,7 @@ import { Box, css, Icon, Stack, Typography } from "@dldc/hono-ui";
 import { Timer } from "lucide-static";
 import type { Session } from "../logic/sessions.ts";
 import type { AppStore } from "../logic/store.ts";
-import { DocStep } from "./DocStep.tsx";
+import { DocSlide } from "./DocSlide.tsx";
 import { UserResults } from "./UserResults.tsx";
 
 interface UserLiveQuizzProps {
@@ -28,8 +28,8 @@ export const UserLiveQuizz = ({ session, store }: UserLiveQuizzProps) => {
   state.state satisfies "running";
   return (
     <Box classList={css({ display: "grid", gridTemplateRows: "1fr auto", gap: 4 })}>
-      <DocStep store={store} session={session} />
-      <UserResults store={store} session={session} />
+      <DocSlide store={store} session={session} />
+      <UserResults results={store.getSessionResults(session.id)} />
     </Box>
   );
 };

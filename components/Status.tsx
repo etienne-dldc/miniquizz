@@ -33,7 +33,7 @@ export function Status({ store }: StatusProps) {
       <Stack gap={4} alignItems="center">
         <Icon icon={MonitorPlay} size={7} />
         <Typography>
-          {currentStep.stepIndex + 1} / {quizz.steps.length}
+          {currentStep.stepIndex + 1} / {quizz.slides.length}
         </Typography>
       </Stack>
     </Stack>

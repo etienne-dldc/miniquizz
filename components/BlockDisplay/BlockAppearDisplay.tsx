@@ -11,7 +11,7 @@ export function BlockAppearDisplay({ block }: BlockAppearDisplayProps) {
   const store = useStore();
 
   const progress = store.getCurrentProgress();
-  const hide = progress.appearOffset < block.offset;
+  const hide = progress.type === "leaderboard" ? false : progress.appearOffset < block.offset;
 
   return (
     <Box

@@ -3,7 +3,7 @@ import { throttle } from "@std/async/unstable-throttle";
 import { resolve } from "@std/path";
 import type { AdminAction } from "./adminActionSchema.ts";
 import { type Block, type Doc, parseDoc, type Step } from "./parseDoc.ts";
-import type { Session } from "./sessions.ts";
+import type { Session, Sessions } from "./sessions.ts";
 import type { UserAction } from "./userActionSchema.ts";
 import { restore, sanitize } from "./zenjson.ts";
 
@@ -34,7 +34,8 @@ export type AppProgress =
     options: Options;
     step: Step;
   }
-  | { type: "slide"; stepIndex: number; appearOffset: number; step: Step };
+  | { type: "step"; stepIndex: number; appearOffset: number; step: Step }
+  | { type: "leaderboard"; stepIndex: number };
 
 export interface AppState {
   state: "running" | "idle";
@@ -59,6 +60,12 @@ export interface CurrentQuestionStats {
   totalVotes: number;
 }
 
+export interface LeaderboardEntry {
+  sessionId: string;
+  name: string;
+  results: SessionResults;
+}
+
 export interface AppStore {
   subscribe: SubscribeMethod<AppEvent>;
   dispatch: (action: AppAction) => void;
@@ -69,6 +76,7 @@ export interface AppStore {
   getCurrentQuestionStats: () => CurrentQuestionStats;
   getSessionResults: (sessionId: string) => SessionResults | null;
   getOptionVoteCount: (questionIndex: number, optionValue: string) => number;
+  getLeaderboard: () => LeaderboardEntry[];
   dispose: () => Promise<void>;
 }
 
@@ -76,6 +84,7 @@ export async function createAppStore(
   storage: Storage,
   dataPath: string,
   storageKey: string,
+  sessions: Sessions,
 ): Promise<AppStore> {
   await ensureDataFolder(dataPath);
   const docFilePath = resolve(dataPath, "data.doc.tsx");
@@ -102,6 +111,7 @@ export async function createAppStore(
     getCurrentQuestionStats,
     getSessionResults,
     getOptionVoteCount,
+    getLeaderboard,
     dispose,
   };
 
@@ -376,6 +386,47 @@ export async function createAppStore(
     return count;
   }
 
+  function getLeaderboard(): LeaderboardEntry[] {
+    const entries: LeaderboardEntry[] = [];
+    for (const sessionId of state.sessions.keys()) {
+      const session = sessions.get(sessionId);
+      if (!session || session.isAdmin) {
+        continue;
+      }
+      const results = getSessionResults(sessionId);
+      if (!results) {
+        continue;
+      }
+      entries.push({ sessionId, name: session.name, results });
+    }
+    // Temp generate random stats for testing
+    Array.from({ length: 40 }).forEach((_, i) => {
+      entries.push({
+        sessionId: `test-${i}`,
+        name: `Test User ${i}`,
+        results: {
+          correct: Math.floor(Math.random() * 30),
+          wrong: Math.floor(Math.random() * 30),
+          skipped: Math.floor(Math.random() * 30),
+        },
+      });
+    });
+
+    entries.sort((a, b) => {
+      if (a.results.correct !== b.results.correct) {
+        return b.results.correct - a.results.correct;
+      }
+      if (a.results.wrong !== b.results.wrong) {
+        return a.results.wrong - b.results.wrong;
+      }
+      if (a.results.skipped !== b.results.skipped) {
+        return a.results.skipped - b.results.skipped;
+      }
+      return a.name.localeCompare(b.name);
+    });
+    return entries;
+  }
+
   function saveState() {
     try {
       const copy = { ...state, doc: undefined };
@@ -472,19 +523,35 @@ async function ensureDataFolder(dataPath: string) {
 function computeAllProgress(doc: Doc): AppProgress[] {
   const steps: AppProgress[] = [];
   let questionIndex = 0;
-  doc.steps.forEach((step, index) => {
-    const options = extractOptions(step);
-    const base: AppProgress = options.length === 0
-      ? { stepIndex: index, appearOffset: 0, type: "slide", step }
-      : { stepIndex: index, appearOffset: 0, type: "question", questionIndex, options, phase: "question", step };
-    steps.push(base);
-    for (let appearOffset = 1; appearOffset <= step.maxAppearOffset; appearOffset++) {
-      steps.push({ ...base, appearOffset });
+  doc.slides.forEach((slide, index) => {
+    if (slide.kind === "Leaderboard") {
+      steps.push({ type: "leaderboard", stepIndex: index });
+      return;
     }
-    if (options.length > 0) {
-      steps.push({ stepIndex: index, type: "question", appearOffset: step.maxAppearOffset, questionIndex, options, phase: "answer", step });
-      questionIndex++;
+    if (slide.kind === "Step") {
+      const options = extractOptions(slide);
+      const base: AppProgress = options.length === 0
+        ? { stepIndex: index, appearOffset: 0, type: "step", step: slide }
+        : { stepIndex: index, appearOffset: 0, type: "question", questionIndex, options, phase: "question", step: slide };
+      steps.push(base);
+      for (let appearOffset = 1; appearOffset <= slide.maxAppearOffset; appearOffset++) {
+        steps.push({ ...base, appearOffset });
+      }
+      if (options.length > 0) {
+        steps.push({
+          stepIndex: index,
+          type: "question",
+          appearOffset: slide.maxAppearOffset,
+          questionIndex,
+          options,
+          phase: "answer",
+          step: slide,
+        });
+        questionIndex++;
+      }
+      return;
     }
+    slide satisfies never;
   });
   return steps;
 }

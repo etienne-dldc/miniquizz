@@ -4,6 +4,7 @@ import { StoreProvider } from "../contexts/store.tsx";
 import type { Session } from "../logic/sessions.ts";
 import type { AppStore } from "../logic/store.ts";
 import { BlockDisplay } from "./BlockDisplay.tsx";
+import { Leaderboard } from "./Leaderboard.tsx";
 import { RatioScreen } from "./RatioScreen.tsx";
 
 interface DocStepProps {
@@ -11,7 +12,7 @@ interface DocStepProps {
   session: Session;
 }
 
-export function DocStep({ store, session }: DocStepProps) {
+export function DocSlide({ store, session }: DocStepProps) {
   const progress = store.getCurrentProgress();
   const quizz = store.getDoc();
 
@@ -19,7 +20,9 @@ export function DocStep({ store, session }: DocStepProps) {
     <SessionProvider session={session}>
       <StoreProvider store={store}>
         <RatioScreen ratio={quizz.ratio} classList={css({ padding: 5, overflow: "hidden" })}>
-          {progress.step.blocks.map((block, index) => <BlockDisplay key={index} block={block} />)}
+          {progress.type === "leaderboard"
+            ? <Leaderboard store={store} session={session} />
+            : progress.step.blocks.map((block, index) => <BlockDisplay key={index} block={block} />)}
         </RatioScreen>
       </StoreProvider>
     </SessionProvider>
