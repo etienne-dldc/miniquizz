@@ -1,4 +1,4 @@
-import { css, cssVar, Stack, tokens, Typography } from "@dldc/hono-ui";
+import { Box, css, cssVar, Stack, tokens, Typography } from "@dldc/hono-ui";
 import { useSession } from "../../contexts/session.tsx";
 import { useStore } from "../../contexts/store.tsx";
 import { userActionProps } from "../../logic/actionProps.ts";
@@ -50,11 +50,20 @@ const interactiveClassName = css({
   },
 });
 
-const labelClassName = css({
+const topLeftWrapper = css({
   position: "absolute",
-  top: 0,
-  left: 0,
-  transform: "translate(-30%, -30%)",
+  top: -2,
+  left: -2,
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  borderRadius: "full",
+  cornerShape: "superellipse",
+  background: `[color-mix(in oklab, ${labelBg}, black 30%);]`,
+});
+
+const labelBubbleClassName = css({
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
@@ -66,6 +75,13 @@ const labelClassName = css({
   color: "white",
   fontSize: "xl",
   fontWeight: "bold",
+});
+
+const labelCountClassName = css({
+  fontSize: "xl",
+  color: "white",
+  paddingX: 2,
+  fontFamily: "mono",
 });
 
 const stateClassNames: Record<OptionItemState, Promise<string>> = {
@@ -110,7 +126,7 @@ const stateClassNames: Record<OptionItemState, Promise<string>> = {
       [labelBg.name]: tokens.c("red-600"),
       [borderColor.name]: "transparent",
     },
-    opacity: 0.5,
+    opacity: 0.6,
   }),
 };
 
@@ -138,6 +154,8 @@ export function BlockQuizzOptionDisplay({ block }: BlockQuizzOptionDisplayProps)
 
   const state = getOptionItemState(block.value, option.isCorrect ?? false, sessionState?.voteValue, progress.phase !== "question");
   const isInteractive = state === "default" || state === "selected";
+  const showCount = progress.phase === "answer";
+  const count = progress.phase === "answer" ? store.getOptionVoteCount(progress.questionIndex, option.value) : null;
 
   return (
     <Stack
@@ -148,9 +166,16 @@ export function BlockQuizzOptionDisplay({ block }: BlockQuizzOptionDisplayProps)
       classList={[rootClassName, stateClassNames[state], isInteractive && interactiveClassName]}
       {...userActionProps({ type: "Vote", optionValue: option.value })}
     >
-      <Typography classList={labelClassName}>
-        {label}
-      </Typography>
+      <Box classList={topLeftWrapper}>
+        <Typography classList={labelBubbleClassName}>
+          {label}
+        </Typography>
+        {showCount && (
+          <Typography classList={labelCountClassName}>
+            {count}
+          </Typography>
+        )}
+      </Box>
       {block.children.map((child, index) => <BlockDisplay key={index} block={child} />)}
     </Stack>
   );

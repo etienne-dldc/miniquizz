@@ -68,6 +68,7 @@ export interface AppStore {
   getCurrentSessionState: (sessionId: string) => CurrentSessionState | null;
   getCurrentQuestionStats: () => CurrentQuestionStats;
   getSessionResults: (sessionId: string) => SessionResults | null;
+  getOptionVoteCount: (questionIndex: number, optionValue: string) => number;
   dispose: () => Promise<void>;
 }
 
@@ -100,6 +101,7 @@ export async function createAppStore(
     getCurrentSessionState,
     getCurrentQuestionStats,
     getSessionResults,
+    getOptionVoteCount,
     dispose,
   };
 
@@ -358,6 +360,20 @@ export async function createAppStore(
       }
     }
     return { correct, wrong, skipped };
+  }
+
+  function getOptionVoteCount(questionIndex: number, optionValue: string): number {
+    let count = 0;
+    for (const sessionState of state.sessions.values()) {
+      if (sessionState.isAdmin) {
+        continue;
+      }
+      const vote = sessionState.votes.get(questionIndex);
+      if (vote === optionValue) {
+        count++;
+      }
+    }
+    return count;
   }
 
   function saveState() {
