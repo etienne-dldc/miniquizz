@@ -30,19 +30,19 @@ export const Layout = (
           <script src="/public/utils/fullscreen.js" />
           <style>
             {`
-            @keyframes slide-fade-in {
-              from { opacity: 0; }
-            }
-            @keyframes slide-fade-out {
-              to { opacity: 0; }
-            }
-            ::view-transition-old(slide) {
-              animation: 200ms ease both slide-fade-out;
-            }
-            ::view-transition-new(slide) {
-              animation: 200ms ease both slide-fade-in;
-            }
-          `}
+              @keyframes slide-fade-in {
+                from { opacity: 0; }
+              }
+              @keyframes slide-fade-out {
+                to { opacity: 0; }
+              }
+              ::view-transition-old(slide) {
+                animation: 200ms ease both slide-fade-out;
+              }
+              ::view-transition-new(slide) {
+                animation: 200ms ease both slide-fade-in;
+              }
+            `}
           </style>
         </Fragment>
       }
