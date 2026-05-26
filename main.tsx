@@ -3,6 +3,7 @@ import { deleteCookie, setCookie } from "@hono/hono/cookie";
 import { serveStatic } from "@hono/hono/deno";
 import { streamSSE } from "@hono/hono/streaming";
 import { sValidator } from "@hono/standard-validator";
+import { resolve } from "@std/path";
 import * as v from "@valibot/valibot";
 import console from "node:console";
 import { AdminLiveQuizz } from "./components/AdminLiveQuizz.tsx";
@@ -49,7 +50,7 @@ app.use(
 app.use(
   "/data/*",
   serveStatic({
-    root: appEnv.dataFolderPath,
+    root: resolve(appEnv.dataFolderPath, "public"),
     rewriteRequestPath: (path) => path.replace(/^\/data/, ""),
   }),
 );
