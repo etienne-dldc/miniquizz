@@ -1,13 +1,15 @@
-import { Element, Node } from "@dldc/tsx-doc/jsx";
-
-export declare function Config(props: { name: string; description: string; ratio: number }): Element;
-export declare function Step(props: { children: Node }): Element;
-export declare function Text(props: { children: Node; size?: number; centered?: boolean }): Element;
-export declare function Code(props: { children: Node; size?: number; wrapSize?: number }): Element;
-export declare function Image(props: { src: string; alt: string; size?: number }): Element;
-export declare function QuizzOption(props: { children: Node; value: string; isCorrect?: boolean }): Element;
-export declare function Grid(props: { children: Node; columns?: string; rows?: string; gap?: number }): Element;
-export declare function Box(props: { children: Node }): Element;
+// deno-lint-ignore-file no-import-prefix
+import {
+  Box,
+  Code,
+  Config,
+  Grid,
+  Image,
+  Leaderboard,
+  QuizzOption,
+  Step,
+  Text,
+} from "https://raw.githubusercontent.com/etienne-dldc/miniquizz/230049bfb906da8134fea0cbcd5046f04c65eaae/logic/tsx.ts";
 
 <Config
   name="Quiz de couverture du schema"
@@ -150,3 +152,5 @@ export declare function Box(props: { children: Node }): Element;
     </Grid>
   </Grid>
 </Step>;
+
+<Leaderboard />;
