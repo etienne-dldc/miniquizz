@@ -399,18 +399,6 @@ export async function createAppStore(
       }
       entries.push({ sessionId, name: session.name, results });
     }
-    // Temp generate random stats for testing
-    Array.from({ length: 40 }).forEach((_, i) => {
-      entries.push({
-        sessionId: `test-${i}`,
-        name: `Test User ${i}`,
-        results: {
-          correct: Math.floor(Math.random() * 30),
-          wrong: Math.floor(Math.random() * 30),
-          skipped: Math.floor(Math.random() * 30),
-        },
-      });
-    });
 
     entries.sort((a, b) => {
       if (a.results.correct !== b.results.correct) {
