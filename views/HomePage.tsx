@@ -23,7 +23,7 @@ export const HomePage = ({ session, store }: HomePageProps) => {
           showLogoutButton
           headerLeftContent={<FullscreenButton />}
         >
-          <Box hx-sse:connect="/stream" classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
+          <Box hx-sse:connect="/stream" hx-swap="innerHTML transition:true" classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
             <UserLiveQuizz session={session} store={store} />
           </Box>
         </Layout>

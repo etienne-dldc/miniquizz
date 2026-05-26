@@ -15,7 +15,7 @@ export const UserLiveQuizz = ({ session, store }: UserLiveQuizzProps) => {
 
   if (state.state === "idle") {
     return (
-      <Box classList={css({ display: "grid", gridTemplateRows: "1fr", placeItems: "center" })}>
+      <Box classList={css({ display: "grid", gridTemplateRows: "1fr", placeItems: "center" })} style={{ viewTransitionName: "slide" }}>
         <Stack flexDirection="column" alignItems="center" gap={5} classList={css({ minWidth: "[min(100vw - 2rem, 30rem)]" })}>
           <Icon icon={Timer} size={30} />
           <Typography fontSize="2xl" fontWeight="bold" classList={css({ textAlign: "center" })}>
@@ -27,7 +27,7 @@ export const UserLiveQuizz = ({ session, store }: UserLiveQuizzProps) => {
   }
   state.state satisfies "running";
   return (
-    <Box classList={css({ display: "grid", gridTemplateRows: "1fr auto", gap: 4 })}>
+    <Box classList={css({ display: "grid", gridTemplateRows: "1fr auto", gap: 4 })} style={{ viewTransitionName: "slide" }}>
       <DocSlide store={store} session={session} />
       <UserResults results={store.getSessionResults(session.id)} />
     </Box>

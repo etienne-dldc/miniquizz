@@ -31,7 +31,7 @@ export const AdminPage: FC<AdminPageProps> = ({ store, session }) => {
             </Fragment>
           }
         >
-          <Box hx-sse:connect="/admin/stream/quizz" classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
+          <Box hx-sse:connect="/admin/stream/quizz" hx-swap="innerHTML transition:true" classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
             <AdminLiveQuizz store={store} session={session} />
           </Box>
           <Box hx-sse:connect="/admin/stream/status" classList={css({ display: "grid", gridTemplateRows: "1fr" })}>

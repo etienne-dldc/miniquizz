@@ -9,6 +9,18 @@ interface RatioScreenProps {
 
 const SIZE = 400;
 
+const innerClassName = css(
+  {
+    height: `${SIZE}px`,
+    position: "absolute",
+    borderRadius: 3,
+    cornerShape: "superellipse",
+    display: "grid",
+    gridTemplateColumns: "1fr",
+    gridTemplateRows: "1fr",
+  },
+);
+
 export const RatioScreen = (
   { ratio, children, classList }: RatioScreenProps,
 ) => {
@@ -16,18 +28,8 @@ export const RatioScreen = (
     <Box data-autofit classList={css({ overflow: "hidden", position: "relative" })}>
       <Box
         classList={[
-          css(
-            {
-              width: `${ratio * SIZE}px`,
-              height: `${SIZE}px`,
-              position: "absolute",
-              borderRadius: 3,
-              cornerShape: "superellipse",
-              display: "grid",
-              gridTemplateColumns: "1fr",
-              gridTemplateRows: "1fr",
-            },
-          ),
+          innerClassName,
+          css({ width: `${ratio * SIZE}px` }),
           ...flattenClassList(classList),
         ]}
       >

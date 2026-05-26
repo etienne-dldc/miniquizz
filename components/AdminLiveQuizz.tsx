@@ -15,7 +15,7 @@ export const AdminLiveQuizz = ({ store, session }: AdminLiveQuizzProps) => {
 
   if (state.state === "idle") {
     return (
-      <Box classList={css({ display: "grid", gridTemplateRows: "1fr", placeItems: "center" })}>
+      <Box classList={css({ display: "grid", gridTemplateRows: "1fr", placeItems: "center" })} style={{ viewTransitionName: "slide" }}>
         <Stack flexDirection="column" gap={2} classList={css({ minWidth: "[min(100vw - 2rem, 30rem)]" })}>
           <Button
             variant="primary"
@@ -31,7 +31,7 @@ export const AdminLiveQuizz = ({ store, session }: AdminLiveQuizzProps) => {
   }
   state.state satisfies "running";
   return (
-    <Box classList={css({ display: "grid", gridTemplateRows: "1fr" })}>
+    <Box classList={css({ display: "grid", gridTemplateRows: "1fr" })} style={{ viewTransitionName: "slide" }}>
       <DocSlide store={store} session={session} />
     </Box>
   );
