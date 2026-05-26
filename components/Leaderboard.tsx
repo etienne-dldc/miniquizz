@@ -42,8 +42,6 @@ const rowClassName = css({
 
 export function Leaderboard({ store, session }: LeaderboardProps) {
   const leaderboard = store.getLeaderboard();
-  console.log(leaderboard, session);
-
   return (
     <Box classList={wrapperClassName}>
       <Typography fontSize="2xl" fontWeight="bold" classList={css({ textAlign: "center" })}>Classement</Typography>
