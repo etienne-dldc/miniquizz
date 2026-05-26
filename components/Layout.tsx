@@ -47,14 +47,42 @@ export const Layout = (
         </Fragment>
       }
     >
-      <Box classList={css({ gap: 4, padding: 4, display: "grid", position: "absolute", inset: 0, gridTemplateRows: "auto 1fr" })}>
-        <Box classList={css({ display: "grid", gridTemplateColumns: "1fr auto 1fr" })}>
+      <Box
+        classList={css({
+          gap: 4,
+          padding: 4,
+          display: "grid",
+          position: "absolute",
+          inset: 0,
+          gridTemplateRows: "auto 1fr",
+          media: {
+            "@media (max-width: 1000px)": {
+              padding: 2,
+              gap: 2,
+            },
+          },
+        })}
+      >
+        <Box
+          classList={css({
+            display: "grid",
+            gridTemplateColumns: "1fr auto 1fr",
+            media: {
+              "@media (max-width: 1000px)": {
+                marginBottom: -2,
+                marginTop: -2,
+              },
+            },
+          })}
+        >
           <Stack flexDirection="row" justifyContent="flex-start" alignItems="center">
             {headerLeftContent}
           </Stack>
-          <Title href="/" classList={css({ textAlign: "center" })}>
-            {title}
-          </Title>
+          <Stack flexDirection="row" justifyContent="center" alignItems="center">
+            <Title href="/" classList={css({ textAlign: "center", media: { "@media (max-width: 1000px)": { fontSize: "lg" } } })}>
+              {title}
+            </Title>
+          </Stack>
           <Stack flexDirection="row" justifyContent="flex-end" alignItems="center">
             {showLogoutButton && <LogoutButton />}
           </Stack>

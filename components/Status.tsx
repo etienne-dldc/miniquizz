@@ -17,10 +17,22 @@ export function Status({ store }: StatusProps) {
       alignItems="center"
       justifyContent="center"
       gap={20}
-      classList={css({ fontFamily: "mono", fontSize: "2xl" })}
+      classList={css({
+        fontFamily: "mono",
+        fontSize: "2xl",
+        vars: {
+          "--icon-size": "1.2em",
+        },
+        media: {
+          "@media (max-width: 1000px)": {
+            gap: 10,
+            fontSize: "lg",
+          },
+        },
+      })}
     >
       <Stack gap={4} alignItems="center">
-        <Icon icon={User} size={7} />
+        <Icon icon={User} />
         {currentStep.type === "question"
           ? (
             <Typography>
@@ -31,7 +43,7 @@ export function Status({ store }: StatusProps) {
       </Stack>
 
       <Stack gap={4} alignItems="center">
-        <Icon icon={MonitorPlay} size={7} />
+        <Icon icon={MonitorPlay} />
         <Typography>
           {currentStep.stepIndex + 1} / {quizz.slides.length}
         </Typography>

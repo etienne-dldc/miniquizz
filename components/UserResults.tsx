@@ -16,19 +16,31 @@ export function UserResults({ results }: UserResultsProps) {
       alignItems="center"
       justifyContent="center"
       gap={20}
-      classList={css({ fontFamily: "mono", fontSize: "2xl" })}
+      classList={css({
+        fontFamily: "mono",
+        fontSize: "2xl",
+        vars: {
+          "--icon-size": "1.1em",
+        },
+        media: {
+          "@media (max-width: 1000px)": {
+            gap: 10,
+            fontSize: "lg",
+          },
+        },
+      })}
     >
       <Stack gap={4} alignItems="center" justifyContent="flex-end" classList={css({ color: "green-400" })}>
         <Typography>{results.correct}</Typography>
-        <Icon icon={CircleCheckBig} size={7} />
+        <Icon icon={CircleCheckBig} />
       </Stack>
       <Stack gap={4} alignItems="center" justifyContent="flex-end" classList={css({ color: "blue-400" })}>
         <Typography>{results.skipped}</Typography>
-        <Icon icon={CircleDashed} size={7} />
+        <Icon icon={CircleDashed} />
       </Stack>
       <Stack gap={4} alignItems="center" justifyContent="flex-end" classList={css({ color: "red-400" })}>
         <Typography>{results.wrong}</Typography>
-        <Icon icon={CircleX} size={7} />
+        <Icon icon={CircleX} />
       </Stack>
     </Stack>
   );
