@@ -1,11 +1,11 @@
-FROM denoland/deno:2.7.13
+FROM denoland/deno:2.8
 
 WORKDIR /app
 
 COPY . .
 
 # Pre-cache remote dependencies at build time to speed up startup.
-RUN deno cache main.tsx
+RUN deno ci
 
 ENV PORT=3008
 ENV OTEL_DENO=true

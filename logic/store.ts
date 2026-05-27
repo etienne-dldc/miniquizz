@@ -404,12 +404,6 @@ export async function createAppStore(
       if (a.results.correct !== b.results.correct) {
         return b.results.correct - a.results.correct;
       }
-      if (a.results.wrong !== b.results.wrong) {
-        return a.results.wrong - b.results.wrong;
-      }
-      if (a.results.skipped !== b.results.skipped) {
-        return a.results.skipped - b.results.skipped;
-      }
       return a.name.localeCompare(b.name);
     });
     return entries;
