@@ -98,7 +98,7 @@ export async function createAppStore(
   let disposed = false;
   let isReloadingDoc = false;
   let docReloadQueued = false;
-  let docReloadDebounceHandle: number | null = null;
+  let docReloadDebounceHandle: NodeJS.Timeout | null = null;
   const watchTask = watchDocChanges();
 
   return {
