@@ -1,5 +1,5 @@
 {
-  "name": "miniquizz",
+  "name": "@dldc/miniquizz",
   "exports": {
     ".": "./cli.ts",
     "./tsx-doc": "./tsx.ts"
