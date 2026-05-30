@@ -15,7 +15,7 @@ import {
   type QuizzOptionProps,
   type SpanProps,
   type TextProps,
-} from "./tsx.ts";
+} from "../tsx.ts";
 
 type WithoutChildren<T> = Omit<T, "children">;
 
@@ -86,6 +86,7 @@ export interface Step {
   kind: "Step";
   blocks: Block[];
   maxAppearOffset: number;
+  mode?: "live" | "build";
 }
 
 export interface Leaderboard {
@@ -98,6 +99,10 @@ const configAttrSchema = v.object({
   name: v.string(),
   description: v.string(),
   ratio: v.number(),
+});
+
+const stepAttrSchema = v.object({
+  mode: v.optional(v.picklist(["live", "build"])),
 });
 
 const blockTextAttrSchema = v.object({
@@ -214,12 +219,10 @@ function parseRootBlock(
     return { kind: "config", config: attrs };
   }
   if (element.name === "Step") {
-    if (element.attributes) {
-      throw new Error("Step element cannot have attributes");
-    }
+    const attrs = v.parse(stepAttrSchema, element.attributes ?? {});
     const appearStore = createAppearStore();
     const blocks = parseChildrensToBlocks(element.children, { allowQuizzOption: true, appearStore });
-    return { kind: "step", step: { kind: "Step", blocks, maxAppearOffset: appearStore.getMaxOffset() } };
+    return { kind: "step", step: { kind: "Step", blocks, maxAppearOffset: appearStore.getMaxOffset(), mode: attrs.mode } };
   }
   if (element.name === "Leaderboard") {
     if (element.attributes) {

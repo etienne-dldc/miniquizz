@@ -1,5 +1,5 @@
 import { Box, css } from "@dldc/hono-ui";
-import { useStore } from "../../contexts/store.tsx";
+import { useSlides } from "../../contexts/slides.tsx";
 import type { Block_Appear } from "../../logic/parseDoc.ts";
 import { BlockDisplay } from "../BlockDisplay.tsx";
 
@@ -8,9 +8,7 @@ interface BlockAppearDisplayProps {
 }
 
 export function BlockAppearDisplay({ block }: BlockAppearDisplayProps) {
-  const store = useStore();
-
-  const progress = store.getCurrentProgress();
+  const { progress } = useSlides();
   const hide = progress.type === "leaderboard" ? false : progress.appearOffset < block.offset;
 
   return (

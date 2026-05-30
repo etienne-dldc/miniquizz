@@ -8,11 +8,14 @@ type LayoutProps = {
   classList?: ClassListProp;
   showLogoutButton: boolean;
   headerLeftContent?: Child;
+  buildMode?: false | { progressCount: number };
 };
 
 export const Layout = (
-  { title, children, classList, showLogoutButton, headerLeftContent }: LayoutProps,
+  { title, children, classList, showLogoutButton, headerLeftContent, buildMode }: LayoutProps,
 ) => {
+  const liveMode = !buildMode;
+
   return (
     <Html
       title={title}
@@ -23,11 +26,13 @@ export const Layout = (
             rel="icon"
             href={`data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">❓</text></svg>`}
           />
-          <script src="/public/libs/htmx.4.0.0-beta-3.min.js" />
-          <script src="/public/libs/hx-sse.4.0.0-beta-3.min.js" />
+          {liveMode && <script src="/public/libs/htmx.4.0.0-beta-3.min.js" />}
+          {liveMode && <script src="/public/libs/hx-sse.4.0.0-beta-3.min.js" />}
           <script src="/public/utils/cleanup-css.js" />
           <script src="/public/utils/autofit.js" />
           <script src="/public/utils/fullscreen.js" />
+          {buildMode && <script src="/public/utils/build-play.js" />}
+          {buildMode && <script>{"globalThis.__PROGRESS_COUNT__ = " + buildMode.progressCount}</script>}
           <style>
             {`
               @keyframes slide-fade-in {
@@ -84,7 +89,7 @@ export const Layout = (
             </Title>
           </Stack>
           <Stack flexDirection="row" justifyContent="flex-end" alignItems="center">
-            {showLogoutButton && <LogoutButton />}
+            {liveMode && showLogoutButton && <LogoutButton />}
           </Stack>
         </Box>
         <Box classList={classList}>

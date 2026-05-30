@@ -11,6 +11,10 @@ export function StoreProvider({ store, children }: { store: AppStore; children: 
   );
 }
 
+export function useMaybeStore() {
+  return useContext(StoreContext);
+}
+
 export function useStore() {
   const store = useContext(StoreContext);
   if (!store) {

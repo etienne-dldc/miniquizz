@@ -2,7 +2,9 @@ import { createSubscription, type SubscribeMethod } from "@dldc/pubsub";
 import { throttle } from "@std/async/unstable-throttle";
 import { resolve } from "@std/path";
 import type { AdminAction } from "./adminActionSchema.ts";
-import { type Block, type Doc, parseDoc, type Step } from "./parseDoc.ts";
+import { ensureDataFolder } from "./ensureDataFolder.ts";
+import { type Doc, parseDoc } from "./parseDoc.ts";
+import { type AppProgress, computeAllProgress } from "./progress.ts";
 import type { Session, Sessions } from "./sessions.ts";
 import type { UserAction } from "./userActionSchema.ts";
 import { restore, sanitize } from "./zenjson.ts";
@@ -21,21 +23,6 @@ export type AppSessionState = {
   isAdmin?: boolean;
   votes: Map<number, string>;
 };
-
-export type Options = { value: string; isCorrect: boolean }[];
-
-export type AppProgress =
-  | {
-    type: "question";
-    stepIndex: number;
-    appearOffset: number;
-    questionIndex: number;
-    phase: "question" | "answer";
-    options: Options;
-    step: Step;
-  }
-  | { type: "step"; stepIndex: number; appearOffset: number; step: Step }
-  | { type: "leaderboard"; stepIndex: number };
 
 export interface AppState {
   state: "running" | "idle";
@@ -90,7 +77,7 @@ export async function createAppStore(
   const docFilePath = resolve(dataPath, "data.doc.tsx");
   const sub = createSubscription<AppEvent>();
   let state: AppState = loadState(storage, storageKey, await parseDoc(docFilePath));
-  let allProgress = computeAllProgress(state.doc);
+  let allProgress = computeAllProgress(state.doc, "live");
   state = reconcileStateWithDoc(state, allProgress);
 
   const saveStateThrottled = throttle(saveState, 200);
@@ -175,7 +162,7 @@ export async function createAppStore(
     isReloadingDoc = true;
     try {
       const nextDoc = await parseDoc(docFilePath);
-      allProgress = computeAllProgress(nextDoc);
+      allProgress = computeAllProgress(nextDoc, "live");
       state = reconcileStateWithDoc({ ...state, doc: nextDoc }, allProgress);
       saveStateThrottled();
       emitAllTopicsRefresh();
@@ -484,74 +471,4 @@ function loadState(storage: Storage, storageKey: string, doc: Doc): AppState {
     console.error("Failed to parse app state from storage", err);
     return createInitialAppState(doc);
   }
-}
-
-async function ensureDataFolder(dataPath: string) {
-  try {
-    const stat = await Deno.stat(dataPath);
-    if (!stat.isDirectory) {
-      throw new Error(
-        `Data folder path ${dataPath} exists but is not a directory`,
-      );
-    }
-  } catch (err) {
-    throw new Error(
-      `Data folder path ${dataPath} does not exist or is not accessible`,
-      { cause: err },
-    );
-  }
-}
-
-function computeAllProgress(doc: Doc): AppProgress[] {
-  const steps: AppProgress[] = [];
-  let questionIndex = 0;
-  doc.slides.forEach((slide, index) => {
-    if (slide.kind === "Leaderboard") {
-      steps.push({ type: "leaderboard", stepIndex: index });
-      return;
-    }
-    if (slide.kind === "Step") {
-      const options = extractOptions(slide);
-      const base: AppProgress = options.length === 0
-        ? { stepIndex: index, appearOffset: 0, type: "step", step: slide }
-        : { stepIndex: index, appearOffset: 0, type: "question", questionIndex, options, phase: "question", step: slide };
-      steps.push(base);
-      for (let appearOffset = 1; appearOffset <= slide.maxAppearOffset; appearOffset++) {
-        steps.push({ ...base, appearOffset });
-      }
-      if (options.length > 0) {
-        steps.push({
-          stepIndex: index,
-          type: "question",
-          appearOffset: slide.maxAppearOffset,
-          questionIndex,
-          options,
-          phase: "answer",
-          step: slide,
-        });
-        questionIndex++;
-      }
-      return;
-    }
-    slide satisfies never;
-  });
-  return steps;
-}
-
-function extractOptions(step: Step): { value: string; isCorrect: boolean }[] {
-  function extractFromBlocks(blocks: Block[]): { value: string; isCorrect: boolean }[] {
-    let options: { value: string; isCorrect: boolean }[] = [];
-    for (const block of blocks) {
-      if (block.type === "QuizzOption") {
-        options.push({ value: block.value, isCorrect: block.isCorrect ?? false });
-        continue;
-      }
-      if ("children" in block) {
-        options = options.concat(extractFromBlocks(block.children));
-      }
-    }
-    return options;
-  }
-
-  return extractFromBlocks(step.blocks);
 }

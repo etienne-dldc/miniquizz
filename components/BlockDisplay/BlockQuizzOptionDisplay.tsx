@@ -1,6 +1,5 @@
 import { Box, css, cssVar, Stack, tokens, Typography } from "@dldc/hono-ui";
-import { useSession } from "../../contexts/session.tsx";
-import { useStore } from "../../contexts/store.tsx";
+import { useSlides } from "../../contexts/slides.tsx";
 import { userActionProps } from "../../logic/actionProps.ts";
 import type { Block_QuizzOption } from "../../logic/parseDoc.ts";
 import { BlockDisplay } from "../BlockDisplay.tsx";
@@ -137,14 +136,11 @@ interface BlockQuizzOptionDisplayProps {
 }
 
 export function BlockQuizzOptionDisplay({ block }: BlockQuizzOptionDisplayProps) {
-  const store = useStore();
-  const session = useSession();
+  const { progress, store, sessionState } = useSlides();
 
-  const progress = store.getCurrentProgress();
   if (progress.type !== "question") {
     return (null);
   }
-  const sessionState = store.getCurrentSessionState(session.id);
   const optionIndex = progress.options.findIndex((option) => option.value === block.value);
   if (optionIndex === -1) {
     return null;
@@ -154,8 +150,8 @@ export function BlockQuizzOptionDisplay({ block }: BlockQuizzOptionDisplayProps)
 
   const state = getOptionItemState(block.value, option.isCorrect ?? false, sessionState?.voteValue, progress.phase !== "question");
   const isInteractive = state === "default" || state === "selected";
-  const showCount = progress.phase === "answer";
-  const count = progress.phase === "answer" ? store.getOptionVoteCount(progress.questionIndex, option.value) : null;
+  const count = store?.getOptionVoteCount(progress.questionIndex, option.value) ?? null;
+  const showCount = count !== null && progress.phase === "answer";
 
   return (
     <Stack

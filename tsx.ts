@@ -19,6 +19,7 @@ export declare function Config(props: ConfigProps): Element;
 
 export interface StepProps {
   children: Node;
+  mode?: "live" | "build";
 }
 export declare function Step(props: StepProps): Element;
 

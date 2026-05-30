@@ -1,0 +1,25 @@
+name: Publish
+
+on:
+  workflow_run:
+    workflows:
+      - Check
+    types:
+      - completed
+
+jobs:
+  publish:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.x
+
+      - run: npx jsr publish

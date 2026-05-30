@@ -1,9 +1,11 @@
 name: Build and Push Docker Image
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows:
+      - Check
+    types:
+      - completed
   workflow_dispatch:
 
 env:
@@ -12,6 +14,7 @@ env:
 
 jobs:
   build-and-push:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -20,6 +23,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
 
       - name: Read version from deno.json
         id: pkg
