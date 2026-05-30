@@ -1,10 +1,10 @@
 {
   "name": "miniquizz",
-  "version": "0.13.5",
   "exports": {
     ".": "./cli.ts",
     "./tsx-doc": "./tsx.ts"
   },
+  "version": "0.14.0",
   "tasks": {
     "bump": "deno run -A jsr:@mys/bump@1",
     "deps:outdated": "deno outdated",
